@@ -6,9 +6,26 @@ const app_module_1 = require("./app.module");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({
-        origin: true,
+        origin: (origin, callback) => {
+            if (!origin || true) {
+                callback(null, origin || '*');
+            }
+        },
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: [
+            'Origin',
+            'X-Requested-With',
+            'Content-Type',
+            'Accept',
+            'Authorization',
+            'Accept-Language',
+            'x-refresh-token',
+            'Cache-Control',
+            'Pragma',
+        ],
+        exposedHeaders: ['Authorization', 'x-refresh-token'],
         credentials: true,
+        maxAge: 86400,
     });
     const configService = app.get(config_1.ConfigService);
     const port = process.env.PORT || configService.get('PORT') || 3002;
