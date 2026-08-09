@@ -44,8 +44,7 @@ export class AuthController {
   @UseGuards(JwtGuard)
   @Get('profile')
   async getProfile(@Req() req: any) {
-    // JwtGuard attaches user to request (usually { sub: userId, email: ... })
-    const userId = req.user?.sub || req.user?._id;
+    const userId = req.user?.sub || req.user?._id || req.user?.id || req.user?.userId || req.user?.email;
     return this.authService.getProfile(userId);
   }
 }

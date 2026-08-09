@@ -23,10 +23,10 @@ let ProductsService = class ProductsService {
         this.productModel = productModel;
     }
     async findAll() {
-        return this.productModel.find().exec();
+        return this.productModel.find().populate('categoryId').exec();
     }
     async findOne(id) {
-        const product = await this.productModel.findById(id).exec();
+        const product = await this.productModel.findById(id).populate('categoryId').exec();
         if (!product) {
             throw new common_1.NotFoundException(`Product with ID ${id} not found`);
         }

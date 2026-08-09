@@ -16,6 +16,9 @@ let Product = class Product {
     name;
     sku;
     description;
+    additionalInformation;
+    averageRating;
+    reviewCount;
     categoryId;
     policyId;
     basePrice;
@@ -41,6 +44,18 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Product.prototype, "description", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Product.prototype, "additionalInformation", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: Number, default: 0 }),
+    __metadata("design:type", Number)
+], Product.prototype, "averageRating", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: Number, default: 0 }),
+    __metadata("design:type", Number)
+], Product.prototype, "reviewCount", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'Category', index: true }),
     __metadata("design:type", mongoose_2.Types.ObjectId)

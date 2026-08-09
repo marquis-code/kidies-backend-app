@@ -170,7 +170,19 @@ let AuthService = class AuthService {
         return this.userModel.find({}, '-passwordHash -resetPasswordToken -resetPasswordExpires').sort({ createdAt: -1 }).exec();
     }
     async getProfile(userId) {
-        const user = await this.userModel.findById(userId, '-passwordHash -resetPasswordToken -resetPasswordExpires');
+        if (!userId) {
+            throw new common_1.BadRequestException('User ID is required');
+        }
+        try {
+            const user = await this.userModel.findById(userId, '-passwordHash -resetPasswordToken -resetPasswordExpires');
+            if (user)
+                return user;
+        }
+        catch (e) {
+        }
+        const user = await this.userModel.findOne({
+            $or: [{ email: userId }]
+        }, '-passwordHash -resetPasswordToken -resetPasswordExpires');
         if (!user) {
             throw new common_1.NotFoundException('User not found');
         }

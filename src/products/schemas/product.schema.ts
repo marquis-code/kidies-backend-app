@@ -14,6 +14,15 @@ export class Product {
   @Prop()
   description: string;
 
+  @Prop()
+  additionalInformation: string;
+
+  @Prop({ type: Number, default: 0 })
+  averageRating: number;
+
+  @Prop({ type: Number, default: 0 })
+  reviewCount: number;
+
   @Prop({ type: Types.ObjectId, ref: 'Category', index: true })
   categoryId: Types.ObjectId;
 

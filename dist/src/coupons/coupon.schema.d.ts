@@ -24,15 +24,6 @@ export declare const CouponSchema: import("mongoose").Schema<Coupon, import("mon
     }, "id"> & import("mongoose").HydratedDocumentOverrides<{
         id: string;
     }>> | undefined;
-    isActive?: import("mongoose").SchemaDefinitionProperty<boolean, Coupon, Document<unknown, {}, Coupon, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<Coupon & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & import("mongoose").HydratedDocumentOverrides<{
-        id: string;
-    }>> | undefined;
     code?: import("mongoose").SchemaDefinitionProperty<string, Coupon, Document<unknown, {}, Coupon, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Coupon & Required<{
@@ -52,6 +43,15 @@ export declare const CouponSchema: import("mongoose").Schema<Coupon, import("mon
         id: string;
     }>> | undefined;
     discountValue?: import("mongoose").SchemaDefinitionProperty<number, Coupon, Document<unknown, {}, Coupon, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Coupon & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & import("mongoose").HydratedDocumentOverrides<{
+        id: string;
+    }>> | undefined;
+    isActive?: import("mongoose").SchemaDefinitionProperty<boolean, Coupon, Document<unknown, {}, Coupon, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Coupon & Required<{
         _id: import("mongoose").Types.ObjectId;

@@ -157,7 +157,20 @@ export class AuthService {
   }
 
   async getProfile(userId: string): Promise<any> {
-    const user = await this.userModel.findById(userId, '-passwordHash -resetPasswordToken -resetPasswordExpires');
+    if (!userId) {
+      throw new BadRequestException('User ID is required');
+    }
+    try {
+      const user = await this.userModel.findById(userId, '-passwordHash -resetPasswordToken -resetPasswordExpires');
+      if (user) return user;
+    } catch (e) {
+      // Invalid ObjectId format string
+    }
+
+    const user = await this.userModel.findOne({
+      $or: [{ email: userId }]
+    }, '-passwordHash -resetPasswordToken -resetPasswordExpires');
+
     if (!user) {
       throw new NotFoundException('User not found');
     }

@@ -40,7 +40,7 @@ let AuthController = class AuthController {
         return this.authService.getUsers();
     }
     async getProfile(req) {
-        const userId = req.user?.sub || req.user?._id;
+        const userId = req.user?.sub || req.user?._id || req.user?.id || req.user?.userId || req.user?.email;
         return this.authService.getProfile(userId);
     }
 };

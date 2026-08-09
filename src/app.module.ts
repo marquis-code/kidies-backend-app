@@ -11,6 +11,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { ProductPoliciesModule } from './product-policies/product-policies.module';
 import { CouponsModule } from './coupons/coupons.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CouponsModule } from './coupons/coupons.module';
     AuditLogsModule,
     ProductPoliciesModule,
     CouponsModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

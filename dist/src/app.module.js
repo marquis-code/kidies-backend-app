@@ -20,6 +20,7 @@ const categories_module_1 = require("./categories/categories.module");
 const audit_logs_module_1 = require("./audit-logs/audit-logs.module");
 const product_policies_module_1 = require("./product-policies/product-policies.module");
 const coupons_module_1 = require("./coupons/coupons.module");
+const reviews_module_1 = require("./reviews/reviews.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -44,6 +45,7 @@ exports.AppModule = AppModule = __decorate([
             audit_logs_module_1.AuditLogsModule,
             product_policies_module_1.ProductPoliciesModule,
             coupons_module_1.CouponsModule,
+            reviews_module_1.ReviewsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

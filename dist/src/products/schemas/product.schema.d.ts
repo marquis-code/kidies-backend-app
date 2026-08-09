@@ -4,6 +4,9 @@ export declare class Product {
     name: string;
     sku: string;
     description: string;
+    additionalInformation: string;
+    averageRating: number;
+    reviewCount: number;
     categoryId: Types.ObjectId;
     policyId: Types.ObjectId;
     basePrice: number;
@@ -53,6 +56,33 @@ export declare const ProductSchema: import("mongoose").Schema<Product, import("m
         id: string;
     }>> | undefined;
     description?: import("mongoose").SchemaDefinitionProperty<string, Product, Document<unknown, {}, Product, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Product & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & import("mongoose").HydratedDocumentOverrides<{
+        id: string;
+    }>> | undefined;
+    additionalInformation?: import("mongoose").SchemaDefinitionProperty<string, Product, Document<unknown, {}, Product, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Product & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & import("mongoose").HydratedDocumentOverrides<{
+        id: string;
+    }>> | undefined;
+    averageRating?: import("mongoose").SchemaDefinitionProperty<number, Product, Document<unknown, {}, Product, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Product & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & import("mongoose").HydratedDocumentOverrides<{
+        id: string;
+    }>> | undefined;
+    reviewCount?: import("mongoose").SchemaDefinitionProperty<number, Product, Document<unknown, {}, Product, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Product & {
         _id: Types.ObjectId;
