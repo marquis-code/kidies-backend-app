@@ -16,4 +16,9 @@ export class ReviewsController {
   findByProduct(@Param('id') id: string) {
     return this.reviewsService.findByProduct(id);
   }
+
+  @Get(':id')
+  findByProductIdAlias(@Param('id') id: string) {
+    return this.reviewsService.findByProduct(id);
+  }
 }

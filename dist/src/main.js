@@ -7,9 +7,7 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({
         origin: (origin, callback) => {
-            if (!origin || true) {
-                callback(null, origin || '*');
-            }
+            callback(null, origin || true);
         },
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         allowedHeaders: [

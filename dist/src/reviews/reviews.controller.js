@@ -27,6 +27,9 @@ let ReviewsController = class ReviewsController {
     findByProduct(id) {
         return this.reviewsService.findByProduct(id);
     }
+    findByProductIdAlias(id) {
+        return this.reviewsService.findByProduct(id);
+    }
 };
 exports.ReviewsController = ReviewsController;
 __decorate([
@@ -45,6 +48,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ReviewsController.prototype, "findByProduct", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ReviewsController.prototype, "findByProductIdAlias", null);
 exports.ReviewsController = ReviewsController = __decorate([
     (0, common_1.Controller)('reviews'),
     __metadata("design:paramtypes", [reviews_service_1.ReviewsService])
