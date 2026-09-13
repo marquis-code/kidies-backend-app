@@ -71,6 +71,7 @@ async function createAdmin() {
                 lastName: 'User',
                 passwordHash,
                 role: 'admin',
+                isEmailVerified: true,
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
