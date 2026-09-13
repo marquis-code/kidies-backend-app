@@ -23,6 +23,100 @@ export class User {
 
   @Prop()
   resetPasswordExpires?: Date;
+
+  @Prop()
+  phoneNumber?: string;
+
+  @Prop()
+  zipCode?: string;
+
+  @Prop({ default: false })
+  isEmailVerified: boolean;
+
+  @Prop()
+  otpCode?: string;
+
+  @Prop()
+  otpExpiresAt?: Date;
+
+  // ---- Rewards System ----
+  @Prop({ default: 0 })
+  rewardPoints: number;
+
+  @Prop({ default: 'Insider', enum: ['Insider', 'Stylist', 'Icon'] })
+  rewardTier: string;
+
+  @Prop({ default: 0 })
+  totalSpent: number;
+
+  // ---- Addresses ----
+  @Prop({
+    type: [{
+      label: String,
+      firstName: String,
+      lastName: String,
+      street: String,
+      apt: String,
+      city: String,
+      state: String,
+      zipCode: String,
+      country: String,
+      phone: String,
+      isDefault: { type: Boolean, default: false },
+    }],
+    default: [],
+  })
+  addresses: any[];
+
+  // ---- Wishlist ----
+  @Prop({ type: [String], default: [] })
+  wishlist: string[];
+
+  // ---- Payment Methods (card tokens – NOT full card numbers!) ----
+  @Prop({
+    type: [{
+      type: { type: String, enum: ['credit_card', 'gift_card'] },
+      last4: String,
+      brand: String,
+      expiryMonth: Number,
+      expiryYear: Number,
+      isDefault: { type: Boolean, default: false },
+    }],
+    default: [],
+  })
+  paymentMethods: any[];
+
+  // ---- Preferences ----
+  @Prop({ type: Object, default: { emailOffers: true, smsAlerts: false, language: 'en', currency: 'usd' } })
+  preferences: {
+    emailOffers: boolean;
+    smsAlerts: boolean;
+    language: string;
+    currency: string;
+  };
+
+  // ---- Discounts / Applied Coupons ----
+  @Prop({
+    type: [{
+      code: String,
+      description: String,
+      discountPercent: Number,
+      validUntil: Date,
+      type: { type: String, enum: ['savings', 'offer'] },
+    }],
+    default: [],
+  })
+  discounts: any[];
+
+  // ---- Birthdays ----
+  @Prop({
+    type: [{
+      childName: String,
+      birthDate: Date,
+    }],
+    default: [],
+  })
+  birthdays: any[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

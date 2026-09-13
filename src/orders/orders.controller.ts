@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Patch, Req } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { JwtGuard } from '../auth/jwt.guard';
 
@@ -11,10 +11,27 @@ export class OrdersController {
     return this.ordersService.create(createOrderDto);
   }
 
+  @Post('track')
+  async trackOrder(@Body() body: { email: string; orderNumber: string }) {
+    const order = await this.ordersService.trackOrder(body.email, body.orderNumber);
+    if (!order) {
+      // Return 404 naturally or null
+      return null;
+    }
+    return order;
+  }
+
   @UseGuards(JwtGuard)
   @Get()
   async getOrders() {
     return this.ordersService.findAll();
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('my-orders')
+  async getMyOrders(@Req() req: any) {
+    const email = req.user?.email;
+    return this.ordersService.findByEmail(email);
   }
 
   @UseGuards(JwtGuard)

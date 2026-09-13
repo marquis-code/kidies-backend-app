@@ -6,6 +6,7 @@ import { Order, OrderSchema } from './schemas/order.schema';
 import { AuthModule } from '../auth/auth.module';
 import { AuditLogsModule } from '../audit-logs/audit-logs.module';
 import { PaystackController } from './paystack.controller';
+import { StripeController } from './stripe.controller';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { PaystackController } from './paystack.controller';
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
     AuthModule,
   ],
-  controllers: [OrdersController, PaystackController],
+  controllers: [OrdersController, PaystackController, StripeController],
   providers: [OrdersService],
 })
 export class OrdersModule {}

@@ -42,11 +42,14 @@ export class Order {
   @Prop({ required: true })
   totalAmount: number;
 
-  @Prop({ enum: ['paystack', 'cash_on_delivery', 'check'], default: 'paystack' })
+  @Prop({ enum: ['paystack', 'stripe', 'cash_on_delivery', 'check'], default: 'paystack' })
   paymentMethod: string;
 
   @Prop({ type: String })
   paystackReference: string;
+
+  @Prop({ type: String })
+  stripeSessionId: string;
 
   @Prop({ enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], default: 'Processing' })
   status: string;

@@ -1,0 +1,8 @@
+ValidationError: Order validation failed: paymentMethod: `stripe` is not a valid enum value for path `paymentMethod`.
+    at model.validate (/Users/marquis/children-outfit-sale-ecommerce/backend/node_modules/mongoose/lib/document.js:2910:36)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async model.$__save (/Users/marquis/children-outfit-sale-ecommerce/backend/node_modules/mongoose/lib/model.js:399:7)
+    at async maybeTracedSave (/Users/marquis/children-outfit-sale-ecommerce/backend/node_modules/mongoose/lib/model.js:676:7)
+    at async OrdersService.create (/Users/marquis/children-outfit-sale-ecommerce/backend/src/orders/orders.service.ts:161:26)
+    at async /Users/marquis/children-outfit-sale-ecommerce/backend/node_modules/@nestjs/core/router/router-execution-context.js:47:62
+    at async /Users/marquis/children-outfit-sale-ecommerce/backend/node_modules/@nestjs/core/router/router-proxy.js:9:17

@@ -1,0 +1,25 @@
+import { AuthService } from './auth.service';
+export declare class AuthController {
+    private readonly authService;
+    constructor(authService: AuthService);
+    register(registerDto: any): Promise<any>;
+    verifyOtp(verifyOtpDto: any): Promise<any>;
+    resendOtp(resendOtpDto: any): Promise<any>;
+    login(loginDto: any): Promise<any>;
+    socialLogin(socialDto: any): Promise<any>;
+    forgotPassword(forgotPasswordDto: any): Promise<any>;
+    resetPassword(resetPasswordDto: any): Promise<any>;
+    getUsers(): Promise<any[]>;
+    getProfile(req: any): Promise<any>;
+    updateProfile(req: any, updateDto: any): Promise<any>;
+    changePassword(req: any, changePasswordDto: any): Promise<any>;
+    getDashboard(req: any): Promise<any>;
+    addAddress(req: any, addressDto: any): Promise<any>;
+    removeAddress(req: any, index: string): Promise<any>;
+    addPaymentMethod(req: any, paymentDto: any): Promise<any>;
+    removePaymentMethod(req: any, index: string): Promise<any>;
+    toggleWishlist(req: any, productId: string): Promise<any>;
+    updatePreferences(req: any, prefsDto: any): Promise<any>;
+    addBirthday(req: any, birthdayDto: any): Promise<any>;
+    removeBirthday(req: any, index: string): Promise<any>;
+}

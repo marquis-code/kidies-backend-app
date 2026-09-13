@@ -79,6 +79,28 @@ export class Product {
     }
   ])
   variants: any[];
+
+  // ---- New filter fields ----
+  @Prop({ enum: ['boy', 'girl', 'unisex'], default: 'unisex' })
+  gender: string;
+
+  @Prop([String])
+  colors: string[];
+
+  @Prop({ enum: ['girls-12m-12', 'boys-12m-12', 'baby-girls-0-24m', 'baby-boys-0-24m', 'toddler'], default: null })
+  ageGroup: string;
+
+  @Prop({ enum: ['tops', 'bottoms', 'dresses', 'sets', 'pajamas', 'shoes', 'boots', 'coats-jackets', 'denim-jackets', 'accessories', 'swimwear'], default: null })
+  productType: string;
+
+  @Prop({ type: [String], default: [] })
+  keyFeatures: string[];
+
+  @Prop({ type: [String], default: [] })
+  sustainability: string[];
+
+  @Prop([{ type: Types.ObjectId, ref: 'Product' }])
+  relatedProducts: Types.ObjectId[];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req, Patch, Delete, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtGuard } from './jwt.guard';
 
@@ -9,6 +9,18 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: any) {
     return this.authService.register(registerDto);
+  }
+
+  @Post('verify-otp')
+  @HttpCode(HttpStatus.OK)
+  async verifyOtp(@Body() verifyOtpDto: any) {
+    return this.authService.verifyOtp(verifyOtpDto);
+  }
+
+  @Post('resend-otp')
+  @HttpCode(HttpStatus.OK)
+  async resendOtp(@Body() resendOtpDto: any) {
+    return this.authService.resendOtp(resendOtpDto);
   }
 
   @Post('login')
@@ -46,5 +58,82 @@ export class AuthController {
   async getProfile(@Req() req: any) {
     const userId = req.user?.sub || req.user?._id || req.user?.id || req.user?.userId || req.user?.email;
     return this.authService.getProfile(userId);
+  }
+
+  @UseGuards(JwtGuard)
+  @Patch('profile')
+  async updateProfile(@Req() req: any, @Body() updateDto: any) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.updateProfile(userId, updateDto);
+  }
+
+  @UseGuards(JwtGuard)
+  @Patch('change-password')
+  async changePassword(@Req() req: any, @Body() changePasswordDto: any) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.changePassword(userId, changePasswordDto);
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('dashboard')
+  async getDashboard(@Req() req: any) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.getDashboard(userId);
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('addresses')
+  async addAddress(@Req() req: any, @Body() addressDto: any) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.addAddress(userId, addressDto);
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete('addresses/:index')
+  async removeAddress(@Req() req: any, @Param('index') index: string) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.removeAddress(userId, parseInt(index));
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('payments')
+  async addPaymentMethod(@Req() req: any, @Body() paymentDto: any) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.addPaymentMethod(userId, paymentDto);
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete('payments/:index')
+  async removePaymentMethod(@Req() req: any, @Param('index') index: string) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.removePaymentMethod(userId, parseInt(index));
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('wishlist')
+  async toggleWishlist(@Req() req: any, @Body('productId') productId: string) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.toggleWishlist(userId, productId);
+  }
+
+  @UseGuards(JwtGuard)
+  @Patch('preferences')
+  async updatePreferences(@Req() req: any, @Body() prefsDto: any) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.updatePreferences(userId, prefsDto);
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('birthdays')
+  async addBirthday(@Req() req: any, @Body() birthdayDto: any) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.addBirthday(userId, birthdayDto);
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete('birthdays/:index')
+  async removeBirthday(@Req() req: any, @Param('index') index: string) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.removeBirthday(userId, parseInt(index));
   }
 }
