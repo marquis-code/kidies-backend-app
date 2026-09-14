@@ -25,6 +25,7 @@ const reviews_module_1 = require("./reviews/reviews.module");
 const promotions_module_1 = require("./promotions/promotions.module");
 const stores_module_1 = require("./stores/stores.module");
 const contact_module_1 = require("./contact/contact.module");
+const settings_module_1 = require("./settings/settings.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -54,6 +55,7 @@ exports.AppModule = AppModule = __decorate([
             promotions_module_1.PromotionsModule,
             stores_module_1.StoresModule,
             contact_module_1.ContactModule,
+            settings_module_1.SettingsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

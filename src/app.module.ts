@@ -16,6 +16,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { PromotionsModule } from './promotions/promotions.module';
 import { StoresModule } from './stores/stores.module';
 import { ContactModule } from './contact/contact.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ContactModule } from './contact/contact.module';
     PromotionsModule,
     StoresModule,
     ContactModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
