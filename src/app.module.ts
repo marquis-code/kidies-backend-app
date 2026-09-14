@@ -17,6 +17,7 @@ import { PromotionsModule } from './promotions/promotions.module';
 import { StoresModule } from './stores/stores.module';
 import { ContactModule } from './contact/contact.module';
 import { SettingsModule } from './settings/settings.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { SettingsModule } from './settings/settings.module';
     StoresModule,
     ContactModule,
     SettingsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
