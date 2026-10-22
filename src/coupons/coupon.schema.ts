@@ -14,7 +14,19 @@ export class Coupon extends Document {
 
   @Prop({ default: true })
   isActive: boolean;
-  
+
+  @Prop({ default: 0, min: 0 })
+  minPurchaseAmount: number;
+
+  @Prop({ default: 0, min: 0 })
+  usageLimit: number;
+
+  @Prop({ default: 0, min: 0 })
+  usedCount: number;
+
+  @Prop({ required: false })
+  description?: string;
+
   @Prop({ required: false })
   expiryDate?: Date;
 }

@@ -90,6 +90,7 @@ const StorefrontSettingsSchema = mongoose_1.SchemaFactory.createForClass(Storefr
 let Setting = class Setting {
     key;
     storefront;
+    general;
 };
 exports.Setting = Setting;
 __decorate([
@@ -100,6 +101,10 @@ __decorate([
     (0, mongoose_1.Prop)({ type: StorefrontSettingsSchema, default: {} }),
     __metadata("design:type", StorefrontSettings)
 ], Setting.prototype, "storefront", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: Object, default: {} }),
+    __metadata("design:type", Object)
+], Setting.prototype, "general", void 0);
 exports.Setting = Setting = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], Setting);

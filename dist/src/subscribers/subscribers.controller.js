@@ -16,10 +16,15 @@ exports.SubscribersController = void 0;
 const common_1 = require("@nestjs/common");
 const subscribers_service_1 = require("./subscribers.service");
 const create_subscriber_dto_1 = require("./dto/create-subscriber.dto");
+const jwt_guard_1 = require("../auth/jwt.guard");
+const admin_guard_1 = require("../auth/admin.guard");
 let SubscribersController = class SubscribersController {
     subscribersService;
     constructor(subscribersService) {
         this.subscribersService = subscribersService;
+    }
+    async findAll() {
+        return this.subscribersService.findAll();
     }
     async create(createSubscriberDto) {
         const subscriber = await this.subscribersService.subscribe(createSubscriberDto);
@@ -30,6 +35,13 @@ let SubscribersController = class SubscribersController {
     }
 };
 exports.SubscribersController = SubscribersController;
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SubscribersController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),

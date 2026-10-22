@@ -53,7 +53,7 @@ export declare const ChatSchema: import("mongoose").Schema<Chat, import("mongoos
     }, "id"> & import("mongoose").HydratedDocumentOverrides<{
         id: string;
     }>> | undefined;
-    sender?: import("mongoose").SchemaDefinitionProperty<"admin" | "customer", Chat, Document<unknown, {}, Chat, {
+    sender?: import("mongoose").SchemaDefinitionProperty<"customer" | "admin", Chat, Document<unknown, {}, Chat, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Chat & Required<{
         _id: import("mongoose").Types.ObjectId;

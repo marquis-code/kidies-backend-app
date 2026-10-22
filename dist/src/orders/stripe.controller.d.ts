@@ -1,12 +1,12 @@
 import { ConfigService } from '@nestjs/config';
-import { Model } from 'mongoose';
-import type { Request, Response } from 'express';
-import { OrderDocument } from './schemas/order.schema';
+import type { Response } from 'express';
+import { OrdersService } from './orders.service';
 export declare class StripeController {
     private configService;
-    private orderModel;
+    private ordersService;
+    private readonly logger;
     private stripe;
     private webhookSecret;
-    constructor(configService: ConfigService, orderModel: Model<OrderDocument>);
-    handleWebhook(req: Request, res: Response, signature: string): Promise<Response<any, Record<string, any>>>;
+    constructor(configService: ConfigService, ordersService: OrdersService);
+    handleWebhook(req: any, res: Response, signature: string): Promise<Response<any, Record<string, any>>>;
 }

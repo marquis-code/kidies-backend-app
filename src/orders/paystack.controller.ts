@@ -1,51 +1,46 @@
-import { Controller, Post, Req, Res, Headers, HttpCode } from '@nestjs/common';
+import { Controller, Post, Req, Res, Headers, HttpCode, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import * as crypto from 'crypto';
 import type { Request, Response } from 'express';
-import { Order, OrderDocument } from './schemas/order.schema';
+import { OrdersService } from './orders.service';
 
 @Controller('webhook/paystack')
 export class PaystackController {
+  private readonly logger = new Logger(PaystackController.name);
+
   constructor(
     private configService: ConfigService,
-    @InjectModel(Order.name) private orderModel: Model<OrderDocument>
+    private ordersService: OrdersService,
   ) {}
 
   @Post()
   @HttpCode(200)
   async handleWebhook(
-    @Req() req: Request,
+    @Req() req: any,
     @Res() res: Response,
-    @Headers('x-paystack-signature') signature: string
+    @Headers('x-paystack-signature') signature: string,
   ) {
-    const secretKey = this.configService.get<string>('PAYSTACK_SECRET_KEY') || process.env.PAYSTACK_SECRET_KEY;
+    const secretKey =
+      this.configService.get<string>('PAYSTACK_SECRET_KEY') || process.env.PAYSTACK_SECRET_KEY;
     if (!secretKey) {
       return res.status(400).send('Secret key not configured');
     }
 
-    // Verify signature
-    const hash = crypto.createHmac('sha512', secretKey).update(JSON.stringify(req.body)).digest('hex');
+    const rawBody = req.rawBody || Buffer.from(JSON.stringify(req.body));
+    const hash = crypto.createHmac('sha512', secretKey).update(rawBody).digest('hex');
     if (hash !== signature) {
+      this.logger.warn('Rejected Paystack webhook with invalid signature');
       return res.status(400).send('Invalid signature');
     }
 
     const event = req.body;
-
-    if (event.event === 'charge.success') {
-      const reference = event.data.reference;
-      // Find the order with this reference
-      const order = await this.orderModel.findOne({ paystackReference: reference });
-      
-      if (order && order.paymentStatus !== 'Paid') {
-        order.paymentStatus = 'Paid';
-        order.status = 'Processing'; // or whatever status comes after paid
-        await order.save();
-        console.log(`Order ${order.orderNumber} successfully paid via Paystack`);
+    if (event?.event === 'charge.success') {
+      try {
+        await this.ordersService.markPaidByReference(event.data?.reference);
+      } catch (err) {
+        this.logger.error(`Failed to process Paystack webhook: ${(err as Error).message}`);
       }
     }
-
     return res.status(200).send('Webhook processed');
   }
 }

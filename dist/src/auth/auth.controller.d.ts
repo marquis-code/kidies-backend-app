@@ -6,10 +6,15 @@ export declare class AuthController {
     verifyOtp(verifyOtpDto: any): Promise<any>;
     resendOtp(resendOtpDto: any): Promise<any>;
     login(loginDto: any): Promise<any>;
+    adminLogin(loginDto: any): Promise<any>;
+    refresh(bodyToken: string, req: any): Promise<any>;
+    logout(): any;
     socialLogin(socialDto: any): Promise<any>;
     forgotPassword(forgotPasswordDto: any): Promise<any>;
     resetPassword(resetPasswordDto: any): Promise<any>;
-    getUsers(): Promise<any[]>;
+    getUsers(query: any): Promise<any[]>;
+    getAdminProfile(req: any): Promise<any>;
+    getAdminStats(): Promise<any>;
     getProfile(req: any): Promise<any>;
     updateProfile(req: any, updateDto: any): Promise<any>;
     changePassword(req: any, changePasswordDto: any): Promise<any>;

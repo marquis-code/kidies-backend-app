@@ -3,9 +3,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ContactService } from './contact.service';
 import { ContactController } from './contact.controller';
 import { Contact, ContactSchema } from './schemas/contact.schema';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Contact.name, schema: ContactSchema }])],
+  imports: [
+    AuthModule,MongooseModule.forFeature([{ name: Contact.name, schema: ContactSchema }])],
   controllers: [ContactController],
   providers: [ContactService],
 })

@@ -23,7 +23,10 @@ let ProductPoliciesService = class ProductPoliciesService {
         this.policyModel = policyModel;
     }
     async create(createProductPolicyDto) {
-        const createdPolicy = new this.policyModel(createProductPolicyDto);
+        const name = String(createProductPolicyDto?.name || '').trim();
+        if (!name)
+            throw new common_1.BadRequestException('Policy profile name is required');
+        const createdPolicy = new this.policyModel({ ...createProductPolicyDto, name });
         return createdPolicy.save();
     }
     async findAll() {

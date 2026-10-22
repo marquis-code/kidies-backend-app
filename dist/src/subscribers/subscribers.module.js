@@ -12,12 +12,15 @@ const mongoose_1 = require("@nestjs/mongoose");
 const subscribers_controller_1 = require("./subscribers.controller");
 const subscribers_service_1 = require("./subscribers.service");
 const subscriber_schema_1 = require("./schemas/subscriber.schema");
+const auth_module_1 = require("../auth/auth.module");
 let SubscribersModule = class SubscribersModule {
 };
 exports.SubscribersModule = SubscribersModule;
 exports.SubscribersModule = SubscribersModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: subscriber_schema_1.Subscriber.name, schema: subscriber_schema_1.SubscriberSchema }])],
+        imports: [
+            auth_module_1.AuthModule, mongoose_1.MongooseModule.forFeature([{ name: subscriber_schema_1.Subscriber.name, schema: subscriber_schema_1.SubscriberSchema }])
+        ],
         controllers: [subscribers_controller_1.SubscribersController],
         providers: [subscribers_service_1.SubscribersService],
     })

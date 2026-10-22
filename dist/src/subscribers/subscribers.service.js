@@ -22,6 +22,9 @@ let SubscribersService = class SubscribersService {
     constructor(subscriberModel) {
         this.subscriberModel = subscriberModel;
     }
+    async findAll() {
+        return this.subscriberModel.find().sort({ createdAt: -1 }).exec();
+    }
     async subscribe(createSubscriberDto) {
         const existingSubscriber = await this.subscriberModel.findOne({ email: createSubscriberDto.email.toLowerCase() });
         if (existingSubscriber) {

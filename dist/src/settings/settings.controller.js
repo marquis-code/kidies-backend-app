@@ -15,19 +15,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingsController = void 0;
 const common_1 = require("@nestjs/common");
 const settings_service_1 = require("./settings.service");
+const jwt_guard_1 = require("../auth/jwt.guard");
+const admin_guard_1 = require("../auth/admin.guard");
 let SettingsController = class SettingsController {
     settingsService;
     constructor(settingsService) {
         this.settingsService = settingsService;
     }
+    async getAll() {
+        return this.settingsService.getAll();
+    }
     async getStorefrontSettings() {
         return this.settingsService.getStorefrontSettings();
     }
-    async updateStorefrontSettings(payload) {
+    async getGeneralSettings() {
+        return this.settingsService.getGeneralSettings();
+    }
+    async updateStorefrontSettings(payload, req) {
         return this.settingsService.updateStorefrontSettings(payload);
+    }
+    async updateGeneralSettings(payload) {
+        return this.settingsService.updateGeneralSettings(payload);
     }
 };
 exports.SettingsController = SettingsController;
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SettingsController.prototype, "getAll", null);
 __decorate([
     (0, common_1.Get)('storefront'),
     __metadata("design:type", Function),
@@ -35,12 +52,28 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SettingsController.prototype, "getStorefrontSettings", null);
 __decorate([
+    (0, common_1.Get)('general'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SettingsController.prototype, "getGeneralSettings", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Put)('storefront'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], SettingsController.prototype, "updateStorefrontSettings", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
+    (0, common_1.Put)('general'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], SettingsController.prototype, "updateStorefrontSettings", null);
+], SettingsController.prototype, "updateGeneralSettings", null);
 exports.SettingsController = SettingsController = __decorate([
     (0, common_1.Controller)('settings'),
     __metadata("design:paramtypes", [settings_service_1.SettingsService])

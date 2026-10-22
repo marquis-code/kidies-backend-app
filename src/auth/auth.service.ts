@@ -1,7 +1,8 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { User, UserDocument } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -12,9 +13,11 @@ import { getAuth } from 'firebase-admin/auth';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {
     if (!getApps().length) {
       initializeApp({
@@ -65,25 +68,25 @@ export class AuthService {
       await user.save();
     }
 
-    const payload = { sub: user._id, email: user.email };
-    const accessToken = this.jwtService.sign(payload);
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const tokens = this.signTokens(user);
 
     return {
       message: 'Social login successful',
-      accessToken,
-      refreshToken,
-      user: {
-        id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName
-      }
+      ...tokens,
+      user: this.publicUser(user),
     };
   }
   async register(registerDto: any): Promise<any> {
-    const { email, password, firstName, lastName } = registerDto;
-    
+    const email = (registerDto.email || '').toLowerCase().trim();
+    const { password, firstName, lastName } = registerDto;
+
+    if (!email || !password || !firstName || !lastName) {
+      throw new BadRequestException('First name, last name, email and password are required');
+    }
+    if (String(password).length < 6) {
+      throw new BadRequestException('Password must be at least 6 characters long');
+    }
+
     // Check if user exists
     const existingUser = await this.userModel.findOne({ email });
     if (existingUser) {
@@ -104,17 +107,29 @@ export class AuthService {
     });
 
     await newUser.save();
-    
+
+    await this.sendEmail(
+      email,
+      'Verify your JasmarKids account',
+      `<p>Welcome to JasmarKids, ${firstName}!</p><p>Your verification code is <strong>${otpCode}</strong>. It expires in 15 minutes.</p>`,
+    );
+
     return {
       message: 'User registered successfully. Please verify your email with the OTP sent.',
       requiresOtp: true,
-      email: newUser.email
+      email: newUser.email,
+      ...(process.env.NODE_ENV !== 'production' ? { demoOtp: otpCode } : {}),
     };
   }
 
-  async login(loginDto: any): Promise<any> {
-    const { email, password } = loginDto;
-    
+  async login(loginDto: any, requireAdmin = false): Promise<any> {
+    const email = (loginDto.email || '').toLowerCase().trim();
+    const { password } = loginDto;
+
+    if (!email || !password) {
+      throw new BadRequestException('Email and password are required');
+    }
+
     const user = await this.userModel.findOne({ email });
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -125,24 +140,85 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (requireAdmin && user.role !== 'admin') {
+      throw new ForbiddenException('This account does not have administrator access.');
+    }
+
     if (!user.isEmailVerified) {
       throw new UnauthorizedException('Please verify your email address before logging in.');
     }
 
-    const payload = { sub: user._id, email: user.email };
-    const accessToken = this.jwtService.sign(payload);
-    // Refresh token typically has a longer expiration
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
+    return {
+      ...this.signTokens(user),
+      user: this.publicUser(user),
+    };
+  }
+
+  async adminLogin(loginDto: any): Promise<any> {
+    return this.login(loginDto, true);
+  }
+
+  async refresh(refreshToken: string): Promise<any> {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token is required');
+    }
+    let payload: any;
+    try {
+      payload = await this.jwtService.verifyAsync(refreshToken, {
+        secret: this.configService.get<string>('JWT_SECRET') || process.env.JWT_SECRET,
+      });
+    } catch {
+      throw new UnauthorizedException('Refresh token is invalid or expired');
+    }
+
+    const user = await this.userModel.findById(payload.sub);
+    if (!user || !user.isEmailVerified) {
+      throw new UnauthorizedException('Account is no longer active');
+    }
 
     return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName
-      }
+      ...this.signTokens(user),
+      user: this.publicUser(user),
+    };
+  }
+
+  logout(): any {
+    return { message: 'Logged out successfully' };
+  }
+
+  async getAdminProfile(userId: string): Promise<any> {
+    const user = await this.getProfile(userId);
+    const plain: any = typeof (user as any).toObject === 'function' ? (user as any).toObject() : user;
+    if (plain.role !== 'admin') {
+      throw new ForbiddenException('Administrator access required');
+    }
+    return plain;
+  }
+
+  private signTokens(user: UserDocument) {
+    const payload = { sub: user._id.toString(), email: user.email, role: user.role || 'customer' };
+    return {
+      accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, { expiresIn: '30d' }),
+    };
+  }
+
+  private publicUser(user: UserDocument) {
+    return {
+      id: user._id,
+      _id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role || 'customer',
+      phoneNumber: user.phoneNumber,
+      zipCode: user.zipCode,
+      preferences: user.preferences,
+      wishlist: user.wishlist || [],
+      addresses: user.addresses || [],
+      rewardPoints: user.rewardPoints,
+      rewardTier: user.rewardTier,
+      totalSpent: user.totalSpent,
     };
   }
 
@@ -172,20 +248,10 @@ export class AuthService {
     user.otpExpiresAt = undefined;
     await user.save();
 
-    const payload = { sub: user._id, email: user.email };
-    const accessToken = this.jwtService.sign(payload);
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
-
     return {
       message: 'Email verified successfully',
-      accessToken,
-      refreshToken,
-      user: {
-        id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName
-      }
+      ...this.signTokens(user),
+      user: this.publicUser(user),
     };
   }
 
@@ -208,9 +274,16 @@ export class AuthService {
     user.otpExpiresAt = otpExpiresAt;
     await user.save();
 
+    await this.sendEmail(
+      email,
+      'Your new JasmarKids verification code',
+      `<p>Your new verification code is <strong>${otpCode}</strong>. It expires in 15 minutes.</p>`,
+    );
+
     return {
       message: 'A new OTP has been sent to your email address.',
-      email: user.email
+      email: user.email,
+      ...(process.env.NODE_ENV !== 'production' ? { demoOtp: otpCode } : {}),
     };
   }
 
@@ -231,11 +304,19 @@ export class AuthService {
     user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
     await user.save();
 
-    // In a real app, send an email here.
-    // For this demonstration, we'll return the token directly so the frontend can use it.
-    return { 
-      message: 'Password reset token generated. In a real app, this would be emailed.',
-      resetToken // EXPOSING FOR DEMO PURPOSES ONLY!
+    const storefrontUrl =
+      process.env.FRONTEND_URL || process.env.STOREFRONT_URL || 'http://localhost:3100';
+    const resetLink = `${storefrontUrl}/reset-password?token=${resetToken}`;
+
+    await this.sendEmail(
+      email,
+      'Reset your JasmarKids password',
+      `<p>We received a request to reset your password.</p><p><a href="${resetLink}">Click here to choose a new password</a>. This link expires in 1 hour.</p><p>If you did not request this, you can safely ignore this email.</p>`,
+    );
+
+    return {
+      message: 'If an account exists, a password reset link has been sent.',
+      ...(process.env.NODE_ENV !== 'production' ? { resetToken } : {}),
     };
   }
 
@@ -263,8 +344,58 @@ export class AuthService {
     return { message: 'Password has been reset successfully' };
   }
 
-  async getUsers(): Promise<any[]> {
-    return this.userModel.find({}, '-passwordHash -resetPasswordToken -resetPasswordExpires').sort({ createdAt: -1 }).exec();
+  private async sendEmail(to: string, subject: string, html: string): Promise<void> {
+    const apiKey = (process.env.RESEND_API_KEY || '').trim();
+    if (!apiKey || apiKey.startsWith('re_your') || apiKey === '') {
+      this.logger.log(`[email skipped] To: ${to} | Subject: ${subject}`);
+      return;
+    }
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: process.env.EMAIL_FROM || 'JasmarKids <noreply@jasmarkids.com>',
+          to: [to],
+          subject,
+          html,
+        }),
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        this.logger.warn(`Email provider rejected message: ${text}`);
+      }
+    } catch (error: any) {
+      this.logger.warn(`Unable to send email: ${error?.message}`);
+    }
+  }
+
+  async getUsers(query: any = {}): Promise<any[]> {
+    const filter: any = {};
+    if (query.role) filter.role = query.role;
+    if (query.search) {
+      const rx = new RegExp(String(query.search).trim(), 'i');
+      filter.$or = [{ firstName: rx }, { lastName: rx }, { email: rx }];
+    }
+    return this.userModel
+      .find(filter, '-passwordHash -resetPasswordToken -resetPasswordExpires -otpCode -otpExpiresAt')
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
+  async getUserStats(): Promise<any> {
+    const [total, admins, verified, recent] = await Promise.all([
+      this.userModel.countDocuments(),
+      this.userModel.countDocuments({ role: 'admin' }),
+      this.userModel.countDocuments({ isEmailVerified: true }),
+      this.userModel.countDocuments({
+        createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+      }),
+    ]);
+    return { total, admins, verified, recent, customers: total - admins };
   }
 
   async getProfile(userId: string): Promise<any> {
@@ -289,7 +420,19 @@ export class AuthService {
   }
 
   async updateProfile(userId: string, updateDto: any): Promise<any> {
-    const user = await this.userModel.findByIdAndUpdate(userId, updateDto, { new: true }).select('-passwordHash -resetPasswordToken -resetPasswordExpires');
+    const allowed = ['firstName', 'lastName', 'phoneNumber', 'zipCode'];
+    const update: any = {};
+    for (const key of allowed) {
+      if (updateDto[key] !== undefined) update[key] = updateDto[key];
+    }
+    if (updateDto.preferences && typeof updateDto.preferences === 'object') {
+      const current = await this.userModel.findById(userId).select('preferences');
+      update.preferences = { ...(current?.preferences || {}), ...updateDto.preferences };
+    }
+
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, update, { new: true })
+      .select('-passwordHash -resetPasswordToken -resetPasswordExpires -otpCode -otpExpiresAt');
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
@@ -359,6 +502,7 @@ export class AuthService {
   }
 
   async toggleWishlist(userId: string, productId: string): Promise<any> {
+    if (!productId) throw new BadRequestException('Product id is required');
     const user = await this.userModel.findById(userId);
     if (!user) throw new NotFoundException('User not found');
     const idx = user.wishlist.indexOf(productId);

@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatController = void 0;
 const common_1 = require("@nestjs/common");
 const chat_service_1 = require("./chat.service");
+const jwt_guard_1 = require("../auth/jwt.guard");
+const admin_guard_1 = require("../auth/admin.guard");
 let ChatController = class ChatController {
     chatService;
     constructor(chatService) {
@@ -32,12 +34,14 @@ let ChatController = class ChatController {
 };
 exports.ChatController = ChatController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Get)('sessions'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ChatController.prototype, "getAllSessions", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Get)('analytics'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

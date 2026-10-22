@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const audit_logs_service_1 = require("./audit-logs.service");
 const create_audit_log_dto_1 = require("./dto/create-audit-log.dto");
 const update_audit_log_dto_1 = require("./dto/update-audit-log.dto");
+const jwt_guard_1 = require("../auth/jwt.guard");
+const admin_guard_1 = require("../auth/admin.guard");
 let AuditLogsController = class AuditLogsController {
     auditLogsService;
     constructor(auditLogsService) {
@@ -75,6 +77,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuditLogsController.prototype, "remove", null);
 exports.AuditLogsController = AuditLogsController = __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Controller)('audit-logs'),
     __metadata("design:paramtypes", [audit_logs_service_1.AuditLogsService])
 ], AuditLogsController);

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -10,7 +10,11 @@ export class CategoriesService {
   constructor(@InjectModel(Category.name) private categoryModel: Model<CategoryDocument>) {}
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    const createdCategory = new this.categoryModel(createCategoryDto);
+    const name = String(createCategoryDto?.name || '').trim();
+    if (!name) throw new BadRequestException('Category name is required');
+    const duplicate = await this.categoryModel.findOne({ name });
+    if (duplicate) throw new ConflictException('A category with this name already exists');
+    const createdCategory = new this.categoryModel({ ...createCategoryDto, name });
     return createdCategory.save();
   }
 
@@ -27,6 +31,13 @@ export class CategoriesService {
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
+    if (updateCategoryDto?.name !== undefined) {
+      const name = String(updateCategoryDto.name).trim();
+      if (!name) throw new BadRequestException('Category name is required');
+      const duplicate = await this.categoryModel.findOne({ name, _id: { $ne: id } });
+      if (duplicate) throw new ConflictException('A category with this name already exists');
+      updateCategoryDto = { ...updateCategoryDto, name };
+    }
     const existingCategory = await this.categoryModel.findByIdAndUpdate(id, updateCategoryDto, { new: true }).exec();
     if (!existingCategory) {
       throw new NotFoundException(`Category #${id} not found`);

@@ -10,4 +10,11 @@ export declare class ContactController {
     } & {
         id: string;
     }>;
+    findAll(): Promise<(import("mongoose").Document<unknown, {}, import("./schemas/contact.schema").Contact, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/contact.schema").Contact & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    } & {
+        id: string;
+    })[]>;
 }

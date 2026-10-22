@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateProductPolicyDto } from './dto/create-product-policy.dto';
@@ -10,7 +10,9 @@ export class ProductPoliciesService {
   constructor(@InjectModel(ProductPolicy.name) private policyModel: Model<ProductPolicyDocument>) {}
 
   async create(createProductPolicyDto: CreateProductPolicyDto): Promise<ProductPolicy> {
-    const createdPolicy = new this.policyModel(createProductPolicyDto);
+    const name = String((createProductPolicyDto as any)?.name || '').trim();
+    if (!name) throw new BadRequestException('Policy profile name is required');
+    const createdPolicy = new this.policyModel({ ...createProductPolicyDto, name });
     return createdPolicy.save();
   }
 

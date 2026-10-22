@@ -14,46 +14,55 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var StripeController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StripeController = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
 const stripe_1 = __importDefault(require("stripe"));
-const order_schema_1 = require("./schemas/order.schema");
-let StripeController = class StripeController {
+const orders_service_1 = require("./orders.service");
+let StripeController = StripeController_1 = class StripeController {
     configService;
-    orderModel;
-    stripe;
+    ordersService;
+    logger = new common_1.Logger(StripeController_1.name);
+    stripe = null;
     webhookSecret;
-    constructor(configService, orderModel) {
+    constructor(configService, ordersService) {
         this.configService = configService;
-        this.orderModel = orderModel;
-        const stripeKey = process.env.STRIPE_SECRET_KEY || this.configService.get('STRIPE_SECRET_KEY') || 'sk_test_placeholder';
-        this.stripe = new stripe_1.default(stripeKey, {
-            apiVersion: '2026-08-26.dahlia',
-        });
-        this.webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || this.configService.get('STRIPE_WEBHOOK_SECRET') || 'whsec_placeholder';
+        this.ordersService = ordersService;
+        const stripeKey = process.env.STRIPE_SECRET_KEY || this.configService.get('STRIPE_SECRET_KEY');
+        if (stripeKey) {
+            try {
+                this.stripe = new stripe_1.default(stripeKey, { apiVersion: '2026-08-26.dahlia' });
+            }
+            catch {
+                this.stripe = null;
+            }
+        }
+        this.webhookSecret =
+            process.env.STRIPE_WEBHOOK_SECRET ||
+                this.configService.get('STRIPE_WEBHOOK_SECRET') ||
+                '';
     }
     async handleWebhook(req, res, signature) {
-        let event;
-        try {
+        let event = req.body;
+        if (this.stripe && this.webhookSecret && signature) {
             const rawBody = req.rawBody || Buffer.from(JSON.stringify(req.body));
-            event = this.stripe.webhooks.constructEvent(rawBody, signature, this.webhookSecret);
+            try {
+                event = this.stripe.webhooks.constructEvent(rawBody, signature, this.webhookSecret);
+            }
+            catch (err) {
+                this.logger.warn(`Stripe signature verification failed: ${err.message}`);
+                return res.status(400).send('Invalid signature');
+            }
         }
-        catch (err) {
-            console.warn(`⚠️  Webhook signature verification failed: ${err.message}. Using raw body.`);
-            event = req.body;
-        }
-        if (event.type === 'checkout.session.completed') {
-            const session = event.data.object;
-            const order = await this.orderModel.findOne({ stripeSessionId: session.id });
-            if (order && order.paymentStatus !== 'Paid') {
-                order.paymentStatus = 'Paid';
-                order.status = 'Processing';
-                await order.save();
-                console.log(`Order ${order.orderNumber} successfully paid via Stripe`);
+        if (event?.type === 'checkout.session.completed') {
+            const session = event.data?.object;
+            try {
+                await this.ordersService.markPaidByReference(session?.id, session?.id);
+            }
+            catch (err) {
+                this.logger.error(`Failed to process Stripe webhook: ${err.message}`);
             }
         }
         return res.status(200).send('Webhook processed');
@@ -70,10 +79,9 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, String]),
     __metadata("design:returntype", Promise)
 ], StripeController.prototype, "handleWebhook", null);
-exports.StripeController = StripeController = __decorate([
+exports.StripeController = StripeController = StripeController_1 = __decorate([
     (0, common_1.Controller)('webhook/stripe'),
-    __param(1, (0, mongoose_1.InjectModel)(order_schema_1.Order.name)),
     __metadata("design:paramtypes", [config_1.ConfigService,
-        mongoose_2.Model])
+        orders_service_1.OrdersService])
 ], StripeController);
 //# sourceMappingURL=stripe.controller.js.map

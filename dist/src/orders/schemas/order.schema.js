@@ -9,9 +9,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderSchema = exports.Order = void 0;
+exports.OrderSchema = exports.Order = exports.PAYMENT_STATUSES = exports.ORDER_STATUSES = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+exports.ORDER_STATUSES = [
+    'Pending',
+    'Processing',
+    'Shipped',
+    'Delivered',
+    'Cancelled',
+];
+exports.PAYMENT_STATUSES = ['Unpaid', 'Paid', 'Refunded'];
 let Order = class Order {
     orderNumber;
     customer;
@@ -19,16 +27,23 @@ let Order = class Order {
     subtotal;
     shippingFee;
     tax;
+    discountAmount;
+    couponCode;
     totalAmount;
+    currency;
     paymentMethod;
     paystackReference;
     stripeSessionId;
+    paymentReference;
     status;
     paymentStatus;
+    paidAt;
+    notes;
+    statusHistory;
 };
 exports.Order = Order;
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, unique: true }),
+    (0, mongoose_1.Prop)({ required: true, unique: true, index: true }),
     __metadata("design:type", String)
 ], Order.prototype, "orderNumber", void 0);
 __decorate([
@@ -43,6 +58,9 @@ __decorate([
             price: Number,
             quantity: Number,
             sku: String,
+            size: String,
+            color: String,
+            image: String,
         },
     ]),
     __metadata("design:type", Array)
@@ -60,11 +78,26 @@ __decorate([
     __metadata("design:type", Number)
 ], Order.prototype, "tax", void 0);
 __decorate([
+    (0, mongoose_1.Prop)({ default: 0 }),
+    __metadata("design:type", Number)
+], Order.prototype, "discountAmount", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Order.prototype, "couponCode", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", Number)
 ], Order.prototype, "totalAmount", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ enum: ['paystack', 'stripe', 'cash_on_delivery', 'check'], default: 'paystack' }),
+    (0, mongoose_1.Prop)({ default: 'USD' }),
+    __metadata("design:type", String)
+], Order.prototype, "currency", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        enum: ['paystack', 'stripe', 'cash_on_delivery', 'check'],
+        default: 'paystack',
+    }),
     __metadata("design:type", String)
 ], Order.prototype, "paymentMethod", void 0);
 __decorate([
@@ -76,15 +109,38 @@ __decorate([
     __metadata("design:type", String)
 ], Order.prototype, "stripeSessionId", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], default: 'Processing' }),
+    (0, mongoose_1.Prop)({ type: String }),
+    __metadata("design:type", String)
+], Order.prototype, "paymentReference", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ enum: exports.ORDER_STATUSES, default: 'Pending' }),
     __metadata("design:type", String)
 ], Order.prototype, "status", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ enum: ['Unpaid', 'Paid', 'Refunded'], default: 'Paid' }),
+    (0, mongoose_1.Prop)({ enum: exports.PAYMENT_STATUSES, default: 'Unpaid' }),
     __metadata("design:type", String)
 ], Order.prototype, "paymentStatus", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Date)
+], Order.prototype, "paidAt", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Order.prototype, "notes", void 0);
+__decorate([
+    (0, mongoose_1.Prop)([
+        {
+            status: String,
+            changedAt: { type: Date, default: Date.now },
+            note: String,
+        },
+    ]),
+    __metadata("design:type", Array)
+], Order.prototype, "statusHistory", void 0);
 exports.Order = Order = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], Order);
 exports.OrderSchema = mongoose_1.SchemaFactory.createForClass(Order);
+exports.OrderSchema.index({ 'customer.email': 1, createdAt: -1 });
 //# sourceMappingURL=order.schema.js.map

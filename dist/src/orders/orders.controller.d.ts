@@ -7,9 +7,16 @@ export declare class OrdersController {
         email: string;
         orderNumber: string;
     }): Promise<import("./schemas/order.schema").Order | null>;
-    getOrders(): Promise<import("./schemas/order.schema").Order[]>;
+    verifyPayment(body: {
+        orderNumber: string;
+        reference?: string;
+    }): Promise<any>;
+    lookupOrder(orderNumber: string, email?: string, reference?: string): Promise<any>;
+    getOrders(query: any): Promise<any>;
     getMyOrders(req: any): Promise<import("./schemas/order.schema").Order[]>;
     getAnalytics(): Promise<any>;
-    getOrderById(id: string): Promise<import("./schemas/order.schema").Order | null>;
-    updateOrderStatus(id: string, status: string): Promise<import("./schemas/order.schema").Order | null>;
+    getOrderById(id: string, req: any): Promise<import("./schemas/order.schema").Order>;
+    updateOrderStatus(id: string, status: string, req: any): Promise<import("./schemas/order.schema").Order | null>;
+    cancelOrder(id: string, req: any): Promise<import("./schemas/order.schema").Order>;
+    updatePaymentStatus(id: string, paymentStatus: string): Promise<import("./schemas/order.schema").Order>;
 }

@@ -65,6 +65,22 @@ export class Setting {
 
   @Prop({ type: StorefrontSettingsSchema, default: {} })
   storefront: StorefrontSettings;
+
+  @Prop({ type: Object, default: {} })
+  general: {
+    storeName?: string;
+    storeEmail?: string;
+    phone?: string;
+    address?: string;
+    currency?: string;
+    shippingFee?: number;
+    freeShippingThreshold?: number;
+    taxRate?: number;
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    announcement?: string;
+  };
 }
 
 export const SettingSchema = SchemaFactory.createForClass(Setting);

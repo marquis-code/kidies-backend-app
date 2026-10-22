@@ -12,12 +12,15 @@ const mongoose_1 = require("@nestjs/mongoose");
 const audit_logs_service_1 = require("./audit-logs.service");
 const audit_logs_controller_1 = require("./audit-logs.controller");
 const audit_log_schema_1 = require("./schemas/audit-log.schema");
+const auth_module_1 = require("../auth/auth.module");
 let AuditLogsModule = class AuditLogsModule {
 };
 exports.AuditLogsModule = AuditLogsModule;
 exports.AuditLogsModule = AuditLogsModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: audit_log_schema_1.AuditLog.name, schema: audit_log_schema_1.AuditLogSchema }])],
+        imports: [
+            auth_module_1.AuthModule, mongoose_1.MongooseModule.forFeature([{ name: audit_log_schema_1.AuditLog.name, schema: audit_log_schema_1.AuditLogSchema }])
+        ],
         controllers: [audit_logs_controller_1.AuditLogsController],
         providers: [audit_logs_service_1.AuditLogsService],
         exports: [audit_logs_service_1.AuditLogsService],

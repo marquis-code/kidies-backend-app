@@ -29,6 +29,10 @@ import { UploadModule } from './upload/upload.module';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI') || 'mongodb://admin:adminpassword@localhost:27017/jasmarkids?authSource=admin',
+        serverSelectionTimeoutMS: 30000,
+        socketTimeoutMS: 60000,
+        maxPoolSize: 25,
+        retryWrites: true,
       }),
     }),
     ProductsModule,

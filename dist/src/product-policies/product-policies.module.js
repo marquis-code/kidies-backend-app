@@ -12,12 +12,15 @@ const mongoose_1 = require("@nestjs/mongoose");
 const product_policies_service_1 = require("./product-policies.service");
 const product_policies_controller_1 = require("./product-policies.controller");
 const product_policy_schema_1 = require("./schemas/product-policy.schema");
+const auth_module_1 = require("../auth/auth.module");
 let ProductPoliciesModule = class ProductPoliciesModule {
 };
 exports.ProductPoliciesModule = ProductPoliciesModule;
 exports.ProductPoliciesModule = ProductPoliciesModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: product_policy_schema_1.ProductPolicy.name, schema: product_policy_schema_1.ProductPolicySchema }])],
+        imports: [
+            auth_module_1.AuthModule, mongoose_1.MongooseModule.forFeature([{ name: product_policy_schema_1.ProductPolicy.name, schema: product_policy_schema_1.ProductPolicySchema }])
+        ],
         controllers: [product_policies_controller_1.ProductPoliciesController],
         providers: [product_policies_service_1.ProductPoliciesService],
         exports: [product_policies_service_1.ProductPoliciesService],

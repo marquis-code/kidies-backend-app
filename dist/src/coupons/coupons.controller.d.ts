@@ -4,6 +4,7 @@ export declare class CouponsController {
     constructor(couponsService: CouponsService);
     create(createCouponDto: any): Promise<import("./coupon.schema").Coupon>;
     findAll(): Promise<import("./coupon.schema").Coupon[]>;
-    validate(code: string): Promise<import("./coupon.schema").Coupon>;
+    validate(code: string, subtotal?: number): Promise<any>;
+    update(id: string, updateCouponDto: any): Promise<import("./coupon.schema").Coupon>;
     remove(id: string): Promise<any>;
 }

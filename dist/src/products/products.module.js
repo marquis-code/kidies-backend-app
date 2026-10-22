@@ -14,6 +14,8 @@ const products_controller_1 = require("./products.controller");
 const product_schema_1 = require("./schemas/product.schema");
 const variant_schema_1 = require("./schemas/variant.schema");
 const inventory_schema_1 = require("./schemas/inventory.schema");
+const category_schema_1 = require("../categories/schemas/category.schema");
+const auth_module_1 = require("../auth/auth.module");
 let ProductsModule = class ProductsModule {
 };
 exports.ProductsModule = ProductsModule;
@@ -24,7 +26,9 @@ exports.ProductsModule = ProductsModule = __decorate([
                 { name: product_schema_1.Product.name, schema: product_schema_1.ProductSchema },
                 { name: variant_schema_1.Variant.name, schema: variant_schema_1.VariantSchema },
                 { name: inventory_schema_1.Inventory.name, schema: inventory_schema_1.InventorySchema },
+                { name: category_schema_1.Category.name, schema: category_schema_1.CategorySchema },
             ]),
+            auth_module_1.AuthModule,
         ],
         controllers: [products_controller_1.ProductsController],
         providers: [products_service_1.ProductsService]

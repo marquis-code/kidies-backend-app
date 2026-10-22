@@ -3,9 +3,19 @@ import { Document, Types } from 'mongoose';
 
 export type OrderDocument = Order & Document;
 
+export const ORDER_STATUSES = [
+  'Pending',
+  'Processing',
+  'Shipped',
+  'Delivered',
+  'Cancelled',
+] as const;
+
+export const PAYMENT_STATUSES = ['Unpaid', 'Paid', 'Refunded'] as const;
+
 @Schema({ timestamps: true })
 export class Order {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, index: true })
   orderNumber: string;
 
   @Prop({ type: Object, required: true })
@@ -15,8 +25,10 @@ export class Order {
     email: string;
     address: string;
     city: string;
+    state?: string;
     country: string;
     zipCode: string;
+    phone?: string;
   };
 
   @Prop([
@@ -26,6 +38,9 @@ export class Order {
       price: Number,
       quantity: Number,
       sku: String,
+      size: String,
+      color: String,
+      image: String,
     },
   ])
   items: any[];
@@ -39,10 +54,22 @@ export class Order {
   @Prop({ required: true, default: 0 })
   tax: number;
 
+  @Prop({ default: 0 })
+  discountAmount: number;
+
+  @Prop()
+  couponCode: string;
+
   @Prop({ required: true })
   totalAmount: number;
 
-  @Prop({ enum: ['paystack', 'stripe', 'cash_on_delivery', 'check'], default: 'paystack' })
+  @Prop({ default: 'USD' })
+  currency: string;
+
+  @Prop({
+    enum: ['paystack', 'stripe', 'cash_on_delivery', 'check'],
+    default: 'paystack',
+  })
   paymentMethod: string;
 
   @Prop({ type: String })
@@ -51,11 +78,30 @@ export class Order {
   @Prop({ type: String })
   stripeSessionId: string;
 
-  @Prop({ enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], default: 'Processing' })
+  @Prop({ type: String })
+  paymentReference: string;
+
+  @Prop({ enum: ORDER_STATUSES, default: 'Pending' })
   status: string;
 
-  @Prop({ enum: ['Unpaid', 'Paid', 'Refunded'], default: 'Paid' })
+  @Prop({ enum: PAYMENT_STATUSES, default: 'Unpaid' })
   paymentStatus: string;
+
+  @Prop()
+  paidAt?: Date;
+
+  @Prop()
+  notes?: string;
+
+  @Prop([
+    {
+      status: String,
+      changedAt: { type: Date, default: Date.now },
+      note: String,
+    },
+  ])
+  statusHistory: any[];
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
+OrderSchema.index({ 'customer.email': 1, createdAt: -1 });

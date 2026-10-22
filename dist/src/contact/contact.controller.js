@@ -16,6 +16,8 @@ exports.ContactController = void 0;
 const common_1 = require("@nestjs/common");
 const contact_service_1 = require("./contact.service");
 const create_contact_dto_1 = require("./dto/create-contact.dto");
+const jwt_guard_1 = require("../auth/jwt.guard");
+const admin_guard_1 = require("../auth/admin.guard");
 let ContactController = class ContactController {
     contactService;
     constructor(contactService) {
@@ -23,6 +25,9 @@ let ContactController = class ContactController {
     }
     create(createContactDto) {
         return this.contactService.create(createContactDto);
+    }
+    findAll() {
+        return this.contactService.findAll();
     }
 };
 exports.ContactController = ContactController;
@@ -33,6 +38,13 @@ __decorate([
     __metadata("design:paramtypes", [create_contact_dto_1.CreateContactDto]),
     __metadata("design:returntype", void 0)
 ], ContactController.prototype, "create", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ContactController.prototype, "findAll", null);
 exports.ContactController = ContactController = __decorate([
     (0, common_1.Controller)('contact'),
     __metadata("design:paramtypes", [contact_service_1.ContactService])

@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PromotionsController = void 0;
 const common_1 = require("@nestjs/common");
 const promotions_service_1 = require("./promotions.service");
+const jwt_guard_1 = require("../auth/jwt.guard");
+const admin_guard_1 = require("../auth/admin.guard");
 let PromotionsController = class PromotionsController {
     promotionsService;
     constructor(promotionsService) {
@@ -52,6 +54,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PromotionsController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -59,6 +62,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PromotionsController.prototype, "create", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -67,6 +71,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PromotionsController.prototype, "update", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

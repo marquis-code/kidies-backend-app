@@ -23,8 +23,26 @@ let ContactService = class ContactService {
         this.contactModel = contactModel;
     }
     async create(createContactDto) {
-        const createdContact = new this.contactModel(createContactDto);
+        const payload = createContactDto || {};
+        const required = ['firstName', 'lastName', 'email', 'message'];
+        const missing = required.filter((key) => !payload[key] || !String(payload[key]).trim());
+        if (missing.length) {
+            throw new common_1.BadRequestException(`Missing contact details: ${missing.join(', ')}`);
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(payload.email))) {
+            throw new common_1.BadRequestException('A valid email address is required');
+        }
+        const createdContact = new this.contactModel({
+            ...payload,
+            firstName: String(payload.firstName).trim(),
+            lastName: String(payload.lastName).trim(),
+            email: String(payload.email).toLowerCase().trim(),
+            message: String(payload.message).trim(),
+        });
         return createdContact.save();
+    }
+    async findAll() {
+        return this.contactModel.find().sort({ createdAt: -1 }).exec();
     }
 };
 exports.ContactService = ContactService;

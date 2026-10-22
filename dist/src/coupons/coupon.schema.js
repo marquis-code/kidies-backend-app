@@ -17,6 +17,10 @@ let Coupon = class Coupon extends mongoose_2.Document {
     discountType;
     discountValue;
     isActive;
+    minPurchaseAmount;
+    usageLimit;
+    usedCount;
+    description;
     expiryDate;
 };
 exports.Coupon = Coupon;
@@ -36,6 +40,22 @@ __decorate([
     (0, mongoose_1.Prop)({ default: true }),
     __metadata("design:type", Boolean)
 ], Coupon.prototype, "isActive", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ default: 0, min: 0 }),
+    __metadata("design:type", Number)
+], Coupon.prototype, "minPurchaseAmount", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ default: 0, min: 0 }),
+    __metadata("design:type", Number)
+], Coupon.prototype, "usageLimit", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ default: 0, min: 0 }),
+    __metadata("design:type", Number)
+], Coupon.prototype, "usedCount", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: false }),
+    __metadata("design:type", String)
+], Coupon.prototype, "description", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ required: false }),
     __metadata("design:type", Date)

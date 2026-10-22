@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const product_policies_service_1 = require("./product-policies.service");
 const create_product_policy_dto_1 = require("./dto/create-product-policy.dto");
 const update_product_policy_dto_1 = require("./dto/update-product-policy.dto");
+const jwt_guard_1 = require("../auth/jwt.guard");
+const admin_guard_1 = require("../auth/admin.guard");
 let ProductPoliciesController = class ProductPoliciesController {
     productPoliciesService;
     constructor(productPoliciesService) {
@@ -40,6 +42,7 @@ let ProductPoliciesController = class ProductPoliciesController {
 };
 exports.ProductPoliciesController = ProductPoliciesController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -60,6 +63,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductPoliciesController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -68,6 +72,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductPoliciesController.prototype, "update", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

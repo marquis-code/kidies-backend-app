@@ -12,12 +12,14 @@ const mongoose_1 = require("@nestjs/mongoose");
 const promotions_controller_1 = require("./promotions.controller");
 const promotions_service_1 = require("./promotions.service");
 const promotion_schema_1 = require("./schemas/promotion.schema");
+const auth_module_1 = require("../auth/auth.module");
 let PromotionsModule = class PromotionsModule {
 };
 exports.PromotionsModule = PromotionsModule;
 exports.PromotionsModule = PromotionsModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            auth_module_1.AuthModule,
             mongoose_1.MongooseModule.forFeature([{ name: promotion_schema_1.Promotion.name, schema: promotion_schema_1.PromotionSchema }]),
         ],
         controllers: [promotions_controller_1.PromotionsController],

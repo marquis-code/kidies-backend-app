@@ -11,4 +11,11 @@ export declare class ContactService {
     } & {
         id: string;
     }>;
+    findAll(): Promise<(import("mongoose").Document<unknown, {}, Contact, {}, import("mongoose").DefaultSchemaOptions> & Contact & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    } & {
+        id: string;
+    })[]>;
 }

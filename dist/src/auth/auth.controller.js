@@ -16,6 +16,7 @@ exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const jwt_guard_1 = require("./jwt.guard");
+const admin_guard_1 = require("./admin.guard");
 let AuthController = class AuthController {
     authService;
     constructor(authService) {
@@ -33,6 +34,16 @@ let AuthController = class AuthController {
     async login(loginDto) {
         return this.authService.login(loginDto);
     }
+    async adminLogin(loginDto) {
+        return this.authService.adminLogin(loginDto);
+    }
+    async refresh(bodyToken, req) {
+        const refreshToken = bodyToken || req.headers['x-refresh-token'];
+        return this.authService.refresh(refreshToken);
+    }
+    logout() {
+        return this.authService.logout();
+    }
     async socialLogin(socialDto) {
         return this.authService.socialLogin(socialDto);
     }
@@ -42,8 +53,15 @@ let AuthController = class AuthController {
     async resetPassword(resetPasswordDto) {
         return this.authService.resetPassword(resetPasswordDto);
     }
-    async getUsers() {
-        return this.authService.getUsers();
+    async getUsers(query) {
+        return this.authService.getUsers(query);
+    }
+    async getAdminProfile(req) {
+        const userId = req.user?.sub || req.user?._id;
+        return this.authService.getAdminProfile(userId);
+    }
+    async getAdminStats() {
+        return this.authService.getUserStats();
     }
     async getProfile(req) {
         const userId = req.user?.sub || req.user?._id || req.user?.id || req.user?.userId || req.user?.email;
@@ -127,6 +145,30 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
+    (0, common_1.Post)('admin/login'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "adminLogin", null);
+__decorate([
+    (0, common_1.Post)('refresh'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Body)('refreshToken')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refresh", null);
+__decorate([
+    (0, common_1.Post)('logout'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "logout", null);
+__decorate([
     (0, common_1.Post)('social-login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Body)()),
@@ -151,12 +193,28 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resetPassword", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
     (0, common_1.Get)('users'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "getUsers", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
+    (0, common_1.Get)('admin/profile'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "getAdminProfile", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, admin_guard_1.AdminGuard),
+    (0, common_1.Get)('admin/stats'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "getUsers", null);
+], AuthController.prototype, "getAdminStats", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, common_1.Get)('profile'),

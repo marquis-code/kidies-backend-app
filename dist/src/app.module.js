@@ -41,6 +41,10 @@ exports.AppModule = AppModule = __decorate([
                 inject: [config_1.ConfigService],
                 useFactory: async (configService) => ({
                     uri: configService.get('MONGODB_URI') || 'mongodb://admin:adminpassword@localhost:27017/jasmarkids?authSource=admin',
+                    serverSelectionTimeoutMS: 30000,
+                    socketTimeoutMS: 60000,
+                    maxPoolSize: 25,
+                    retryWrites: true,
                 }),
             }),
             products_module_1.ProductsModule,

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Promotion, PromotionDocument } from './schemas/promotion.schema';
@@ -32,14 +32,31 @@ export class PromotionsService {
   }
 
   async create(createPromotionDto: any): Promise<Promotion> {
-    const newPromotion = new this.promotionModel(createPromotionDto);
+    if (!createPromotionDto?.title || !String(createPromotionDto.title).trim()) {
+      throw new BadRequestException('Promotion title is required');
+    }
+    if (!createPromotionDto?.imageUrl || !String(createPromotionDto.imageUrl).trim()) {
+      throw new BadRequestException('Promotion image is required');
+    }
+    if (!['hero', 'banner', 'megamenu_ad'].includes(createPromotionDto?.type)) {
+      throw new BadRequestException('Promotion type must be hero, banner or megamenu_ad');
+    }
+    const payload = { ...createPromotionDto };
+    if (payload.isActive !== undefined) {
+      payload.isActive = !(payload.isActive === false || payload.isActive === 'false');
+    }
+    const newPromotion = new this.promotionModel(payload);
     return newPromotion.save();
   }
 
   async update(id: string, updatePromotionDto: any): Promise<Promotion> {
+    const payload = { ...updatePromotionDto };
+    if (payload.isActive !== undefined) {
+      payload.isActive = !(payload.isActive === false || payload.isActive === 'false');
+    }
     const updatedPromotion = await this.promotionModel.findByIdAndUpdate(
       id,
-      updatePromotionDto,
+      payload,
       { new: true },
     ).exec();
     if (!updatedPromotion) {

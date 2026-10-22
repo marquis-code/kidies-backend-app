@@ -1,65 +1,60 @@
-import { Controller, Post, Req, Res, Headers, HttpCode, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Req, Res, Headers, HttpCode, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import type { Request, Response } from 'express';
 import Stripe from 'stripe';
-import { Order, OrderDocument } from './schemas/order.schema';
+import { OrdersService } from './orders.service';
 
 @Controller('webhook/stripe')
 export class StripeController {
-  private stripe: Stripe;
+  private readonly logger = new Logger(StripeController.name);
+  private stripe: Stripe | null = null;
   private webhookSecret: string;
 
   constructor(
     private configService: ConfigService,
-    @InjectModel(Order.name) private orderModel: Model<OrderDocument>
+    private ordersService: OrdersService,
   ) {
-    const stripeKey = process.env.STRIPE_SECRET_KEY || this.configService.get<string>('STRIPE_SECRET_KEY') || 'sk_test_placeholder';
-    this.stripe = new Stripe(stripeKey, {
-      apiVersion: '2026-08-26.dahlia' as any,
-    });
-    this.webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || this.configService.get<string>('STRIPE_WEBHOOK_SECRET') || 'whsec_placeholder';
+    const stripeKey =
+      process.env.STRIPE_SECRET_KEY || this.configService.get<string>('STRIPE_SECRET_KEY');
+    if (stripeKey) {
+      try {
+        this.stripe = new Stripe(stripeKey, { apiVersion: '2026-08-26.dahlia' as any });
+      } catch {
+        this.stripe = null;
+      }
+    }
+    this.webhookSecret =
+      process.env.STRIPE_WEBHOOK_SECRET ||
+      this.configService.get<string>('STRIPE_WEBHOOK_SECRET') ||
+      '';
   }
 
   @Post()
   @HttpCode(200)
   async handleWebhook(
-    @Req() req: Request,
+    @Req() req: any,
     @Res() res: Response,
-    @Headers('stripe-signature') signature: string
+    @Headers('stripe-signature') signature: string,
   ) {
-    let event: Stripe.Event;
-
-    try {
-      // In NestJS, req.body is already parsed as JSON by default. 
-      // Stripe requires the raw body for signature verification.
-      // If we don't have the raw body, we'll try to use the parsed body (only works securely if using a test environment where we might bypass verification)
-      // For production, the main.ts should be configured to save raw body.
-      // We will attempt verification if possible.
-      
-      const rawBody = (req as any).rawBody || Buffer.from(JSON.stringify(req.body));
-      event = this.stripe.webhooks.constructEvent(rawBody, signature, this.webhookSecret);
-    } catch (err) {
-      console.warn(`⚠️  Webhook signature verification failed: ${err.message}. Using raw body.`);
-      // Fallback for missing rawBody configuration in development
-      event = req.body;
-    }
-
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as Stripe.Checkout.Session;
-      
-      // Find the order with this session ID
-      const order = await this.orderModel.findOne({ stripeSessionId: session.id });
-      
-      if (order && order.paymentStatus !== 'Paid') {
-        order.paymentStatus = 'Paid';
-        order.status = 'Processing';
-        await order.save();
-        console.log(`Order ${order.orderNumber} successfully paid via Stripe`);
+    let event: any = req.body;
+    if (this.stripe && this.webhookSecret && signature) {
+      const rawBody = req.rawBody || Buffer.from(JSON.stringify(req.body));
+      try {
+        event = this.stripe.webhooks.constructEvent(rawBody, signature, this.webhookSecret);
+      } catch (err) {
+        this.logger.warn(`Stripe signature verification failed: ${(err as Error).message}`);
+        return res.status(400).send('Invalid signature');
       }
     }
 
+    if (event?.type === 'checkout.session.completed') {
+      const session = event.data?.object;
+      try {
+        await this.ordersService.markPaidByReference(session?.id, session?.id);
+      } catch (err) {
+        this.logger.error(`Failed to process Stripe webhook: ${(err as Error).message}`);
+      }
+    }
     return res.status(200).send('Webhook processed');
   }
 }

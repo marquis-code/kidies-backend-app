@@ -23,7 +23,13 @@ let CategoriesService = class CategoriesService {
         this.categoryModel = categoryModel;
     }
     async create(createCategoryDto) {
-        const createdCategory = new this.categoryModel(createCategoryDto);
+        const name = String(createCategoryDto?.name || '').trim();
+        if (!name)
+            throw new common_1.BadRequestException('Category name is required');
+        const duplicate = await this.categoryModel.findOne({ name });
+        if (duplicate)
+            throw new common_1.ConflictException('A category with this name already exists');
+        const createdCategory = new this.categoryModel({ ...createCategoryDto, name });
         return createdCategory.save();
     }
     async findAll() {
@@ -37,6 +43,15 @@ let CategoriesService = class CategoriesService {
         return category;
     }
     async update(id, updateCategoryDto) {
+        if (updateCategoryDto?.name !== undefined) {
+            const name = String(updateCategoryDto.name).trim();
+            if (!name)
+                throw new common_1.BadRequestException('Category name is required');
+            const duplicate = await this.categoryModel.findOne({ name, _id: { $ne: id } });
+            if (duplicate)
+                throw new common_1.ConflictException('A category with this name already exists');
+            updateCategoryDto = { ...updateCategoryDto, name };
+        }
         const existingCategory = await this.categoryModel.findByIdAndUpdate(id, updateCategoryDto, { new: true }).exec();
         if (!existingCategory) {
             throw new common_1.NotFoundException(`Category #${id} not found`);

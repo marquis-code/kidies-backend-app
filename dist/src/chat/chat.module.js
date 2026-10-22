@@ -12,6 +12,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const chat_gateway_1 = require("./chat.gateway");
 const chat_service_1 = require("./chat.service");
 const chat_schema_1 = require("./chat.schema");
+const auth_module_1 = require("../auth/auth.module");
 const chat_controller_1 = require("./chat.controller");
 let ChatModule = class ChatModule {
 };
@@ -19,6 +20,7 @@ exports.ChatModule = ChatModule;
 exports.ChatModule = ChatModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            auth_module_1.AuthModule,
             mongoose_1.MongooseModule.forFeature([{ name: chat_schema_1.Chat.name, schema: chat_schema_1.ChatSchema }]),
         ],
         controllers: [chat_controller_1.ChatController],

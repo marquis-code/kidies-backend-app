@@ -43,11 +43,28 @@ let PromotionsService = class PromotionsService {
         return promotion;
     }
     async create(createPromotionDto) {
-        const newPromotion = new this.promotionModel(createPromotionDto);
+        if (!createPromotionDto?.title || !String(createPromotionDto.title).trim()) {
+            throw new common_1.BadRequestException('Promotion title is required');
+        }
+        if (!createPromotionDto?.imageUrl || !String(createPromotionDto.imageUrl).trim()) {
+            throw new common_1.BadRequestException('Promotion image is required');
+        }
+        if (!['hero', 'banner', 'megamenu_ad'].includes(createPromotionDto?.type)) {
+            throw new common_1.BadRequestException('Promotion type must be hero, banner or megamenu_ad');
+        }
+        const payload = { ...createPromotionDto };
+        if (payload.isActive !== undefined) {
+            payload.isActive = !(payload.isActive === false || payload.isActive === 'false');
+        }
+        const newPromotion = new this.promotionModel(payload);
         return newPromotion.save();
     }
     async update(id, updatePromotionDto) {
-        const updatedPromotion = await this.promotionModel.findByIdAndUpdate(id, updatePromotionDto, { new: true }).exec();
+        const payload = { ...updatePromotionDto };
+        if (payload.isActive !== undefined) {
+            payload.isActive = !(payload.isActive === false || payload.isActive === 'false');
+        }
+        const updatedPromotion = await this.promotionModel.findByIdAndUpdate(id, payload, { new: true }).exec();
         if (!updatedPromotion) {
             throw new common_1.NotFoundException(`Promotion with ID ${id} not found`);
         }

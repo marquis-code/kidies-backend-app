@@ -12,12 +12,15 @@ const mongoose_1 = require("@nestjs/mongoose");
 const coupons_controller_1 = require("./coupons.controller");
 const coupons_service_1 = require("./coupons.service");
 const coupon_schema_1 = require("./coupon.schema");
+const auth_module_1 = require("../auth/auth.module");
 let CouponsModule = class CouponsModule {
 };
 exports.CouponsModule = CouponsModule;
 exports.CouponsModule = CouponsModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: coupon_schema_1.Coupon.name, schema: coupon_schema_1.CouponSchema }])],
+        imports: [
+            auth_module_1.AuthModule, mongoose_1.MongooseModule.forFeature([{ name: coupon_schema_1.Coupon.name, schema: coupon_schema_1.CouponSchema }])
+        ],
         controllers: [coupons_controller_1.CouponsController],
         providers: [coupons_service_1.CouponsService]
     })

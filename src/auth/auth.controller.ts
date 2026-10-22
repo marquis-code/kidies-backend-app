@@ -1,6 +1,7 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req, Patch, Delete, Param } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req, Patch, Delete, Param, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtGuard } from './jwt.guard';
+import { AdminGuard } from './admin.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -29,6 +30,25 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  @Post('admin/login')
+  @HttpCode(HttpStatus.OK)
+  async adminLogin(@Body() loginDto: any) {
+    return this.authService.adminLogin(loginDto);
+  }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Body('refreshToken') bodyToken: string, @Req() req: any) {
+    const refreshToken = bodyToken || req.headers['x-refresh-token'];
+    return this.authService.refresh(refreshToken);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  logout() {
+    return this.authService.logout();
+  }
+
   @Post('social-login')
   @HttpCode(HttpStatus.OK)
   async socialLogin(@Body() socialDto: any) {
@@ -47,10 +67,23 @@ export class AuthController {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, AdminGuard)
   @Get('users')
-  async getUsers() {
-    return this.authService.getUsers();
+  async getUsers(@Query() query: any) {
+    return this.authService.getUsers(query);
+  }
+
+  @UseGuards(JwtGuard, AdminGuard)
+  @Get('admin/profile')
+  async getAdminProfile(@Req() req: any) {
+    const userId = req.user?.sub || req.user?._id;
+    return this.authService.getAdminProfile(userId);
+  }
+
+  @UseGuards(JwtGuard, AdminGuard)
+  @Get('admin/stats')
+  async getAdminStats() {
+    return this.authService.getUserStats();
   }
 
   @UseGuards(JwtGuard)

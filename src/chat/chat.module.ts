@@ -3,10 +3,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
 import { Chat, ChatSchema } from './chat.schema';
+import { AuthModule } from '../auth/auth.module';
 import { ChatController } from './chat.controller';
 
 @Module({
   imports: [
+    AuthModule,
     MongooseModule.forFeature([{ name: Chat.name, schema: ChatSchema }]),
   ],
   controllers: [ChatController],

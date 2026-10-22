@@ -4,6 +4,10 @@ export declare class Coupon extends Document {
     discountType: string;
     discountValue: number;
     isActive: boolean;
+    minPurchaseAmount: number;
+    usageLimit: number;
+    usedCount: number;
+    description?: string;
     expiryDate?: Date;
 }
 export declare const CouponSchema: import("mongoose").Schema<Coupon, import("mongoose").Model<Coupon, any, any, any, any, any, Coupon>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Coupon, Document<unknown, {}, Coupon, {
@@ -33,6 +37,15 @@ export declare const CouponSchema: import("mongoose").Schema<Coupon, import("mon
     }, "id"> & import("mongoose").HydratedDocumentOverrides<{
         id: string;
     }>> | undefined;
+    description?: import("mongoose").SchemaDefinitionProperty<string | undefined, Coupon, Document<unknown, {}, Coupon, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Coupon & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & import("mongoose").HydratedDocumentOverrides<{
+        id: string;
+    }>> | undefined;
     discountType?: import("mongoose").SchemaDefinitionProperty<string, Coupon, Document<unknown, {}, Coupon, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Coupon & Required<{
@@ -52,6 +65,33 @@ export declare const CouponSchema: import("mongoose").Schema<Coupon, import("mon
         id: string;
     }>> | undefined;
     isActive?: import("mongoose").SchemaDefinitionProperty<boolean, Coupon, Document<unknown, {}, Coupon, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Coupon & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & import("mongoose").HydratedDocumentOverrides<{
+        id: string;
+    }>> | undefined;
+    minPurchaseAmount?: import("mongoose").SchemaDefinitionProperty<number, Coupon, Document<unknown, {}, Coupon, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Coupon & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & import("mongoose").HydratedDocumentOverrides<{
+        id: string;
+    }>> | undefined;
+    usageLimit?: import("mongoose").SchemaDefinitionProperty<number, Coupon, Document<unknown, {}, Coupon, {
+        id: string;
+    }, import("mongoose").DefaultSchemaOptions> & Omit<Coupon & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }, "id"> & import("mongoose").HydratedDocumentOverrides<{
+        id: string;
+    }>> | undefined;
+    usedCount?: import("mongoose").SchemaDefinitionProperty<number, Coupon, Document<unknown, {}, Coupon, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Coupon & Required<{
         _id: import("mongoose").Types.ObjectId;

@@ -10,6 +10,10 @@ export class SubscribersService {
     @InjectModel(Subscriber.name) private subscriberModel: Model<SubscriberDocument>,
   ) {}
 
+  async findAll(): Promise<Subscriber[]> {
+    return this.subscriberModel.find().sort({ createdAt: -1 }).exec();
+  }
+
   async subscribe(createSubscriberDto: CreateSubscriberDto): Promise<Subscriber> {
     const existingSubscriber = await this.subscriberModel.findOne({ email: createSubscriberDto.email.toLowerCase() });
     

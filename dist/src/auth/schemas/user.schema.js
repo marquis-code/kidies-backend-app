@@ -49,6 +49,7 @@ let User = class User {
     firstName;
     lastName;
     email;
+    role;
     passwordHash;
     resetPasswordToken;
     resetPasswordExpires;
@@ -77,9 +78,13 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "lastName", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, unique: true }),
+    (0, mongoose_1.Prop)({ required: true, unique: true, lowercase: true, trim: true }),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ enum: ['customer', 'admin'], default: 'customer' }),
+    __metadata("design:type", String)
+], User.prototype, "role", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)

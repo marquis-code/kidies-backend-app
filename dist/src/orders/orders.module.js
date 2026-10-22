@@ -16,6 +16,9 @@ const auth_module_1 = require("../auth/auth.module");
 const audit_logs_module_1 = require("../audit-logs/audit-logs.module");
 const paystack_controller_1 = require("./paystack.controller");
 const stripe_controller_1 = require("./stripe.controller");
+const product_schema_1 = require("../products/schemas/product.schema");
+const coupon_schema_1 = require("../coupons/coupon.schema");
+const setting_schema_1 = require("../settings/schemas/setting.schema");
 let OrdersModule = class OrdersModule {
 };
 exports.OrdersModule = OrdersModule;
@@ -23,8 +26,13 @@ exports.OrdersModule = OrdersModule = __decorate([
     (0, common_1.Module)({
         imports: [
             audit_logs_module_1.AuditLogsModule,
-            mongoose_1.MongooseModule.forFeature([{ name: order_schema_1.Order.name, schema: order_schema_1.OrderSchema }]),
             auth_module_1.AuthModule,
+            mongoose_1.MongooseModule.forFeature([
+                { name: order_schema_1.Order.name, schema: order_schema_1.OrderSchema },
+                { name: product_schema_1.Product.name, schema: product_schema_1.ProductSchema },
+                { name: coupon_schema_1.Coupon.name, schema: coupon_schema_1.CouponSchema },
+                { name: setting_schema_1.Setting.name, schema: setting_schema_1.SettingSchema },
+            ]),
         ],
         controllers: [orders_controller_1.OrdersController, paystack_controller_1.PaystackController, stripe_controller_1.StripeController],
         providers: [orders_service_1.OrdersService],

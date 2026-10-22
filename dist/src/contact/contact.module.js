@@ -12,12 +12,15 @@ const mongoose_1 = require("@nestjs/mongoose");
 const contact_service_1 = require("./contact.service");
 const contact_controller_1 = require("./contact.controller");
 const contact_schema_1 = require("./schemas/contact.schema");
+const auth_module_1 = require("../auth/auth.module");
 let ContactModule = class ContactModule {
 };
 exports.ContactModule = ContactModule;
 exports.ContactModule = ContactModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: contact_schema_1.Contact.name, schema: contact_schema_1.ContactSchema }])],
+        imports: [
+            auth_module_1.AuthModule, mongoose_1.MongooseModule.forFeature([{ name: contact_schema_1.Contact.name, schema: contact_schema_1.ContactSchema }])
+        ],
         controllers: [contact_controller_1.ContactController],
         providers: [contact_service_1.ContactService],
     })

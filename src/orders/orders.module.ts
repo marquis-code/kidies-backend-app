@@ -7,12 +7,20 @@ import { AuthModule } from '../auth/auth.module';
 import { AuditLogsModule } from '../audit-logs/audit-logs.module';
 import { PaystackController } from './paystack.controller';
 import { StripeController } from './stripe.controller';
+import { Product, ProductSchema } from '../products/schemas/product.schema';
+import { Coupon, CouponSchema } from '../coupons/coupon.schema';
+import { Setting, SettingSchema } from '../settings/schemas/setting.schema';
 
 @Module({
   imports: [
     AuditLogsModule,
-    MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
     AuthModule,
+    MongooseModule.forFeature([
+      { name: Order.name, schema: OrderSchema },
+      { name: Product.name, schema: ProductSchema },
+      { name: Coupon.name, schema: CouponSchema },
+      { name: Setting.name, schema: SettingSchema },
+    ]),
   ],
   controllers: [OrdersController, PaystackController, StripeController],
   providers: [OrdersService],

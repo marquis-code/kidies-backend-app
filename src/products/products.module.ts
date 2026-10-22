@@ -5,6 +5,8 @@ import { ProductsController } from './products.controller';
 import { Product, ProductSchema } from './schemas/product.schema';
 import { Variant, VariantSchema } from './schemas/variant.schema';
 import { Inventory, InventorySchema } from './schemas/inventory.schema';
+import { Category, CategorySchema } from '../categories/schemas/category.schema';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -12,7 +14,9 @@ import { Inventory, InventorySchema } from './schemas/inventory.schema';
       { name: Product.name, schema: ProductSchema },
       { name: Variant.name, schema: VariantSchema },
       { name: Inventory.name, schema: InventorySchema },
+      { name: Category.name, schema: CategorySchema },
     ]),
+    AuthModule,
   ],
   controllers: [ProductsController],
   providers: [ProductsService]
