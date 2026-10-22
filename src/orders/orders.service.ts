@@ -230,7 +230,18 @@ export class OrdersService {
 
     const settings = await this.getStoreSettings();
     const general = settings.general || {};
-    const currency = (general.currency || 'USD').toUpperCase();
+    const defaultCurrency = (general.currency || 'USD').toUpperCase();
+    
+    // Auto-detect Nigeria location or explicitly passed NGN currency
+    const isNigeria =
+      String(customer.country || '').toLowerCase().includes('nigeria') ||
+      String(customer.country || '').toUpperCase() === 'NG' ||
+      String(createOrderDto.currency || '').toUpperCase() === 'NGN';
+
+    const currency = isNigeria ? 'NGN' : (createOrderDto.currency || defaultCurrency).toUpperCase();
+    const ngnRate = Number(general.ngnRate || 1500);
+    const rateMultiplier = (currency === 'NGN' && defaultCurrency !== 'NGN') ? ngnRate : 1;
+
     const taxRate = Number(general.taxRate ?? DEFAULT_TAX_RATE);
     const configuredShipping = Number(general.shippingFee ?? DEFAULT_SHIPPING_FEE);
     const freeShippingThreshold = Number(
@@ -242,11 +253,27 @@ export class OrdersService {
       subtotal,
     );
 
-    const discountedSubtotal = Math.max(0, subtotal - discount);
-    const shippingFee =
-      discountedSubtotal >= freeShippingThreshold ? 0 : Math.round(configuredShipping * 100) / 100;
-    const tax = Math.round(discountedSubtotal * (taxRate / 100) * 100) / 100;
-    const totalAmount = Math.round((discountedSubtotal + shippingFee + tax) * 100) / 100;
+    const rawDiscountedSubtotal = Math.max(0, subtotal - discount);
+    const rawShippingFee =
+      rawDiscountedSubtotal >= freeShippingThreshold ? 0 : Math.round(configuredShipping * 100) / 100;
+    const rawTax = Math.round(rawDiscountedSubtotal * (taxRate / 100) * 100) / 100;
+
+    // Use frontend-passed converted totals if provided, or compute with rateMultiplier
+    const discountedSubtotal = createOrderDto.subtotal
+      ? Number(createOrderDto.subtotal)
+      : Math.round(rawDiscountedSubtotal * rateMultiplier * 100) / 100;
+
+    const shippingFee = createOrderDto.shippingFee !== undefined
+      ? Number(createOrderDto.shippingFee)
+      : Math.round(rawShippingFee * rateMultiplier * 100) / 100;
+
+    const tax = createOrderDto.tax !== undefined
+      ? Number(createOrderDto.tax)
+      : Math.round(rawTax * rateMultiplier * 100) / 100;
+
+    const totalAmount = createOrderDto.totalAmount
+      ? Number(createOrderDto.totalAmount)
+      : Math.round((discountedSubtotal + shippingFee + tax) * 100) / 100;
 
     const orderNumber = await this.generateOrderNumber();
     const paymentMethod = createOrderDto.paymentMethod || 'paystack';
