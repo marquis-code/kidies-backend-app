@@ -50,33 +50,34 @@ function inferGender(tags, name) {
 function inferAgeGroup(tags, name) {
   const t = (tags || []).map(s => s.toLowerCase());
   const n = (name || '').toLowerCase();
-  if (t.includes('baby') || n.includes('baby') || n.includes('newborn') || n.includes('infant')) {
-    const gender = inferGender(tags, name);
-    if (gender === 'girl') return 'baby-girls-0-24m';
-    if (gender === 'boy') return 'baby-boys-0-24m';
-    return 'baby-girls-0-24m'; // default baby
+  if (t.includes('baby') || n.includes('baby') || n.includes('newborn') || n.includes('infant') || n.includes('0-18') || n.includes('months')) {
+    return 'baby-0-18m';
   }
-  if (n.includes('toddler')) return 'toddler';
+  if (n.includes('toddler') || t.includes('toddler') || n.includes('2t') || n.includes('3t') || n.includes('4t') || n.includes('5t')) {
+    const gender = inferGender(tags, name);
+    return gender === 'boy' ? 'toddler-boys-2-5' : 'toddler-girls-2-5';
+  }
   const gender = inferGender(tags, name);
-  if (gender === 'girl') return 'girls-12m-12';
-  if (gender === 'boy') return 'boys-12m-12';
+  if (gender === 'girl') return 'girls-6-16';
+  if (gender === 'boy') return 'boys-6-16';
   return null;
 }
 
 // Infer product type from name
 function inferProductType(name) {
   const n = (name || '').toLowerCase();
-  if (n.includes('dress') || n.includes('romper')) return 'dresses';
-  if (n.includes('legging') || n.includes('pant') || n.includes('short') || n.includes('skirt') || n.includes('jeans')) return 'bottoms';
-  if (n.includes('t-shirt') || n.includes('tee') || n.includes('polo') || n.includes('top') || n.includes('shirt') || n.includes('hoodie') || n.includes('sweater') || n.includes('cardigan')) return 'tops';
-  if (n.includes('pajama') || n.includes('pj') || n.includes('sleep')) return 'pajamas';
-  if (n.includes('set') || n.includes('outfit') || n.includes('matching')) return 'sets';
-  if (n.includes('jacket') || n.includes('coat') || n.includes('puffer') || n.includes('vest')) return 'tops';
-  if (n.includes('boot') || n.includes('shoe') || n.includes('sneaker') || n.includes('sandal') || n.includes('slipper')) return 'shoes';
-  if (n.includes('hat') || n.includes('beanie') || n.includes('bow') || n.includes('headband') || n.includes('backpack') || n.includes('scarf') || n.includes('glove') || n.includes('sock')) return 'accessories';
-  if (n.includes('blanket') || n.includes('swaddle') || n.includes('bib')) return 'accessories';
-  if (n.includes('swim') || n.includes('rash guard')) return 'sets';
-  return null;
+  if (n.includes('costume') || n.includes('superhero') || n.includes('fairy')) return 'costumes';
+  if (n.includes('dress') || n.includes('gown')) return 'dresses';
+  if (n.includes('sock') || n.includes('tights')) return 'socks';
+  if (n.includes('short')) return 'shorts';
+  if (n.includes('t-shirt') || n.includes('tee') || n.includes('graphic tee')) return 't-shirts';
+  if (n.includes('polo') || n.includes('top') || n.includes('shirt') || n.includes('blouse') || n.includes('hoodie') || n.includes('sweater') || n.includes('cardigan') || n.includes('jacket') || n.includes('vest') || n.includes('coat')) return 'tops';
+  if (n.includes('pant') || n.includes('jogger') || n.includes('sweatpant') || n.includes('jean') || n.includes('legging') || n.includes('skirt') || n.includes('bottom') || n.includes('chino')) return 'bottoms';
+  if (n.includes('shoe') || n.includes('sneaker') || n.includes('boot') || n.includes('sandal') || n.includes('slide') || n.includes('slipper') || n.includes('bootie')) return 'shoes';
+  if (n.includes('pajama') || n.includes('pj') || n.includes('sleep') || n.includes('nightwear')) return 'pajamas';
+  if (n.includes('set') || n.includes('outfit') || n.includes('romper') || n.includes('swim') || n.includes('onesie')) return 'sets';
+  if (n.includes('hat') || n.includes('bow') || n.includes('headband') || n.includes('bib') || n.includes('blanket')) return 'accessories';
+  return 'tops';
 }
 
 // Extract base colors from variants
