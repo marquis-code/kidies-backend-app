@@ -19,8 +19,8 @@ const mongoose_2 = require("mongoose");
 const setting_schema_1 = require("./schemas/setting.schema");
 exports.DEFAULT_GENERAL_SETTINGS = {
     storeName: 'JasmarKids',
-    storeEmail: 'hello@jasmarkids.com',
-    phone: '+234 800 JASMARKIDS',
+    storeEmail: 'Jasmar.tayisi@gmail.com',
+    phone: '0807 913 1425',
     address: 'Online Boutique — Nationwide Delivery Across Nigeria',
     currency: 'NGN',
     shippingFee: 2500,

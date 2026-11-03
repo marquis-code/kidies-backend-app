@@ -5,8 +5,8 @@ import { Setting, SettingDocument } from './schemas/setting.schema';
 
 export const DEFAULT_GENERAL_SETTINGS = {
   storeName: 'JasmarKids',
-  storeEmail: 'hello@jasmarkids.com',
-  phone: '+234 800 JASMARKIDS',
+  storeEmail: 'Jasmar.tayisi@gmail.com',
+  phone: '0807 913 1425',
   address: 'Online Boutique — Nationwide Delivery Across Nigeria',
   currency: 'NGN',
   shippingFee: 2500,
