@@ -79,7 +79,10 @@ export class Setting {
     instagram?: string;
     facebook?: string;
     twitter?: string;
+    announcementEnabled?: boolean;
     announcement?: string;
+    announcementLink?: string;
+    announcementLinkText?: string;
   };
 }
 

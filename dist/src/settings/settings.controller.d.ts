@@ -27,7 +27,10 @@ export declare class SettingsController {
             instagram: string;
             facebook: string;
             twitter: string;
+            announcementEnabled: boolean;
             announcement: string;
+            announcementLink: string;
+            announcementLinkText: string;
         };
     }>;
     getStorefrontSettings(): Promise<{
@@ -54,7 +57,10 @@ export declare class SettingsController {
         instagram: string;
         facebook: string;
         twitter: string;
+        announcementEnabled: boolean;
         announcement: string;
+        announcementLink: string;
+        announcementLinkText: string;
     }>;
     updateStorefrontSettings(payload: any, req: any): Promise<import("./schemas/setting.schema").StorefrontSettings>;
     updateGeneralSettings(payload: any): Promise<{
@@ -69,6 +75,9 @@ export declare class SettingsController {
         instagram?: string;
         facebook?: string;
         twitter?: string;
+        announcementEnabled?: boolean;
         announcement?: string;
+        announcementLink?: string;
+        announcementLinkText?: string;
     }>;
 }

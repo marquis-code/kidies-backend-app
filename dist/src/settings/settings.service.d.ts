@@ -13,7 +13,10 @@ export declare const DEFAULT_GENERAL_SETTINGS: {
     instagram: string;
     facebook: string;
     twitter: string;
+    announcementEnabled: boolean;
     announcement: string;
+    announcementLink: string;
+    announcementLinkText: string;
 };
 export declare class SettingsService implements OnModuleInit {
     private settingModel;
@@ -44,7 +47,10 @@ export declare class SettingsService implements OnModuleInit {
         instagram: string;
         facebook: string;
         twitter: string;
+        announcementEnabled: boolean;
         announcement: string;
+        announcementLink: string;
+        announcementLinkText: string;
     }>;
     updateGeneralSettings(payload: any): Promise<{
         storeName?: string;
@@ -58,7 +64,10 @@ export declare class SettingsService implements OnModuleInit {
         instagram?: string;
         facebook?: string;
         twitter?: string;
+        announcementEnabled?: boolean;
         announcement?: string;
+        announcementLink?: string;
+        announcementLinkText?: string;
     }>;
     getAll(): Promise<{
         storefront: {
@@ -85,7 +94,10 @@ export declare class SettingsService implements OnModuleInit {
             instagram: string;
             facebook: string;
             twitter: string;
+            announcementEnabled: boolean;
             announcement: string;
+            announcementLink: string;
+            announcementLinkText: string;
         };
     }>;
 }

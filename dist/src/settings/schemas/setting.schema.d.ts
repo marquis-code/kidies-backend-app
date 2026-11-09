@@ -39,7 +39,10 @@ export declare class Setting {
         instagram?: string;
         facebook?: string;
         twitter?: string;
+        announcementEnabled?: boolean;
         announcement?: string;
+        announcementLink?: string;
+        announcementLinkText?: string;
     };
 }
 export declare const SettingSchema: import("mongoose").Schema<Setting, import("mongoose").Model<Setting, any, any, any, any, any, Setting>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Setting, Document<unknown, {}, Setting, {
@@ -81,7 +84,10 @@ export declare const SettingSchema: import("mongoose").Schema<Setting, import("m
         instagram?: string;
         facebook?: string;
         twitter?: string;
+        announcementEnabled?: boolean;
         announcement?: string;
+        announcementLink?: string;
+        announcementLinkText?: string;
     }, Setting, Document<unknown, {}, Setting, {
         id: string;
     }, import("mongoose").DefaultSchemaOptions> & Omit<Setting & {

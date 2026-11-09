@@ -562,11 +562,8 @@ export class AuthService {
       thresholds: { insider: 0, stylist: 175, icon: 500 },
     };
 
-    // Static discounts/offers for demo
-    const discounts = user.discounts.length > 0 ? user.discounts : [
-      { code: 'EXTRA40', description: 'EXTRA 40% OFF GYM CLEARANCE!', discountPercent: 40, validUntil: new Date('2027-09-15'), type: 'savings' },
-      { code: 'FREESHIP', description: 'Free Standard Gift Service', discountPercent: 0, validUntil: new Date('2027-09-30'), type: 'offer' },
-    ];
+    // Only show discounts that have actually been assigned to the customer.
+    const discounts = Array.isArray(user.discounts) ? user.discounts : [];
 
     const earnPointsActions = [
       { action: 'Take a Survey', points: 10, icon: 'clipboard' },

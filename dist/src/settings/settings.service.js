@@ -29,7 +29,10 @@ exports.DEFAULT_GENERAL_SETTINGS = {
     instagram: 'https://www.instagram.com/jasmar_kids/',
     facebook: 'https://facebook.com/jasmarkids',
     twitter: 'https://twitter.com/jasmarkids',
-    announcement: 'Vibrant Outfits for African Kids • Nationwide Delivery Across Nigeria',
+    announcementEnabled: false,
+    announcement: '',
+    announcementLink: '',
+    announcementLinkText: 'Shop now',
 };
 const DEFAULT_STOREFRONT = {
     heroCarousel: [

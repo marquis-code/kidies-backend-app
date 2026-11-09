@@ -522,10 +522,7 @@ let AuthService = AuthService_1 = class AuthService {
             spendToNextTier: user.rewardTier === 'Insider' ? Math.max(0, 175 - user.totalSpent) : user.rewardTier === 'Stylist' ? Math.max(0, 500 - user.totalSpent) : 0,
             thresholds: { insider: 0, stylist: 175, icon: 500 },
         };
-        const discounts = user.discounts.length > 0 ? user.discounts : [
-            { code: 'EXTRA40', description: 'EXTRA 40% OFF GYM CLEARANCE!', discountPercent: 40, validUntil: new Date('2027-09-15'), type: 'savings' },
-            { code: 'FREESHIP', description: 'Free Standard Gift Service', discountPercent: 0, validUntil: new Date('2027-09-30'), type: 'offer' },
-        ];
+        const discounts = Array.isArray(user.discounts) ? user.discounts : [];
         const earnPointsActions = [
             { action: 'Take a Survey', points: 10, icon: 'clipboard' },
             { action: 'Add a mailing address', points: 10, icon: 'mail' },
