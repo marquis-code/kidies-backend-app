@@ -106,7 +106,10 @@ export class ProductsService {
         .split(',')
         .map((g: string) => g.trim().toLowerCase())
         .filter(Boolean);
-      if (genders.length) filter.gender = { $in: genders };
+      // Shoes, accessories and some sets are listed as unisex; they should
+      // still appear when a parent browses girls or boys.
+      const genderSet = new Set([...genders, 'unisex']);
+      if (genders.length) filter.gender = { $in: Array.from(genderSet) };
     }
 
     if (query.color) {

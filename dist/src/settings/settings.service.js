@@ -24,7 +24,7 @@ exports.DEFAULT_GENERAL_SETTINGS = {
     address: 'Online Boutique — Nationwide Delivery Across Nigeria',
     currency: 'NGN',
     shippingFee: 2500,
-    freeShippingThreshold: 50000,
+    freeShippingThreshold: 90000,
     taxRate: 7.5,
     instagram: 'https://www.instagram.com/jasmar_kids/',
     facebook: 'https://facebook.com/jasmarkids',

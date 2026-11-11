@@ -109,8 +109,9 @@ let ProductsService = class ProductsService {
                 .split(',')
                 .map((g) => g.trim().toLowerCase())
                 .filter(Boolean);
+            const genderSet = new Set([...genders, 'unisex']);
             if (genders.length)
-                filter.gender = { $in: genders };
+                filter.gender = { $in: Array.from(genderSet) };
         }
         if (query.color) {
             const colors = String(query.color)
